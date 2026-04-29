@@ -5,8 +5,6 @@
 **Vai Catar Coquinho!** é um jogo em linha de comando onde o jogador controla um personagem que deve se mover horizontalmente para capturar o maior número possível de cocos que caem do topo da tela.
 **Objetivo:** Fazer a maior pontuação possível antes de perder todas as vidas.
 
----
-
 ## 🤔 Como funciona o jogo:
 
 * O personagem se move para a esquerda e direita
@@ -22,15 +20,11 @@
 
 💀 **Fim de jogo:** O jogador perde quando suas vidas chegam a 0.
 
----
-
 ## ✨ Equipe:
 
 * Maria Clara Pontes — [mcpr2@cesar.school](mailto:mcpr2@cesar.school)
 * Dandara Resende — [dmsrb@cesar.school](mailto:dmsrb@cesar.school)
 * Leticia Soares — [lsncb@cesar.school](mailto:lsncb@cesar.school)
-
----
 
 ## ⚙️ Requisitos (conceitos da linguagem C:):
 
@@ -41,8 +35,6 @@
 * Matrizes
 * Leitura e escrita em arquivos (ex: sistema de pontuação)
 
----
-
 ## 🛠️ Ferramentas utilizadas
 
 * Linguagem: C
@@ -52,19 +44,13 @@
 
 > 🔗 *(futuramente link da biblioteca)*
 
----
-
 ## 🎥 Vídeo do jogo funcionando
 
 > 🔗 *(futuramente link do vídeo)*
 
----
-
 ## ▶️ Como compilar e executar:
 
 > (futuramente explicação detalhada)
-
----
 
 ## 📺 Slides de apresentação
 
@@ -75,8 +61,6 @@
 ### Entrega 2:
 
 > 🔗 *(Adicionar link aqui)*
-
----
 
 ## 📌 Status do projeto
 
