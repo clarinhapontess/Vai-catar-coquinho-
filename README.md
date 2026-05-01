@@ -42,7 +42,7 @@
 
 ### 📚 Biblioteca utilizada
 
-> 🔗 *(futuramente link da biblioteca)*
+> 🔗 (https://github.com/raysan5/raylib)
 
 ## 🎥 Vídeo do jogo funcionando
 
@@ -56,7 +56,7 @@
 
 ### Entrega 1:
 
-> 🔗 *(Adicionar link aqui)*
+> 🔗 (https://canva.link/20psjj7ozorcdjp)
 
 ### Entrega 2:
 
