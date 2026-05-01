@@ -14,7 +14,7 @@
 ### 🥥 Tipos de cocos:
 
 * **Coco normal:** +1 ponto
-* **Coco envenenado:** -1 vida
+* **Lixo na praia:** -1 vida
 * **Coco dourado:** desacelera os cocos e dobra os pontos
 * **Água de coco:** +1 vida
 
