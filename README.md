@@ -1,6 +1,6 @@
 # 🌴 Vai Catar Coquinho! 🌴
 
-## 🌸 Descrição:
+## 🦀 Descrição:
 
 **Vai Catar Coquinho!** é um jogo em linha de comando onde o jogador controla um personagem que deve se mover horizontalmente para capturar o maior número possível de cocos que caem do topo da tela.
 **Objetivo:** Fazer a maior pontuação possível antes de perder todas as vidas.
