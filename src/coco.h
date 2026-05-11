@@ -23,4 +23,6 @@ void UpdateCocos();
 void DrawCocos();
 void AddCocos();
 
+extern Node *listaCocos;
+
 #endif
