@@ -7,7 +7,7 @@ Player player; // -> cria o player //
 void InitPlayer() {
     player.x = 500;
     player.y = 520;
-    player.speed = 5; //-> velocidade do jogador //
+    player.speed = 7; //-> velocidade do jogador //
     player.width = 100; //-> largura do jogador //
     player.height = 40; //-> altura do jogador //
 }
@@ -25,8 +25,8 @@ void UpdatePlayer() {
     if (player.x < 0)
     player.x = 0;
 
-    if (player.x > 800)
-    player.x = 800;
+    if (player.x > 900)
+    player.x = 900;
 }
 
 // Função para desenhar o jogador //

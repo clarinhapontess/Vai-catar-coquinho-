@@ -25,4 +25,7 @@ void AddCocos();
 
 extern Node *listaCocos;
 
+// Matriz //
+extern int spawnAreas[2][5];
+
 #endif

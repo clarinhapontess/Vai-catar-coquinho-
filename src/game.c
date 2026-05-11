@@ -4,6 +4,8 @@
 #include "raylib.h"
 #include <stdlib.h>
 
+int score = 0;
+
 // Game functions //
 void InitGame() {
     InitPlayer();
@@ -36,6 +38,8 @@ void UpdateGame() {
             atual->coco.radius,
             playerRect))
         {
+            score++; // -> aumenta 1 ponto quando ha colisao
+
             atual->coco.y = GetRandomValue(-400, -30);
             atual->coco.x = GetRandomValue(50, 750);
         }
@@ -47,4 +51,13 @@ void UpdateGame() {
 void DrawGame() {
     DrawPlayer();
     DrawCocos();
+
+    // mostra o score na tela //
+    DrawText(
+        TextFormat("Pontos: %i", score),
+        20, 
+        20, 
+        30, 
+        DARKGREEN
+    );
 }

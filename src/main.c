@@ -4,7 +4,7 @@
 #include "player.h"
 
 int main() {
-    InitWindow(900, 600, "Vai Catar Coquinho"); //tamanho da tela//
+    InitWindow(1000, 600, "Vai Catar Coquinho"); //tamanho da tela//
     SetTargetFPS(60); // resolução do jogo//
 
     InitGame();
