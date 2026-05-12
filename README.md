@@ -74,8 +74,11 @@ Depois execute com:
 * [x] Sistema de vidas
 * [x] Tipos de cocos
 * [x] Sistema de pontuação
+* [ ] Mecânica avançada
 * [ ] Salvamento de top scores
 * [ ] Interface no terminal
+* [ ] Música e efeitos sonoros
+* [ ] tela de ínicio + game over
 * [ ] Vídeo demonstrativo
 * [ ] Slides
 
