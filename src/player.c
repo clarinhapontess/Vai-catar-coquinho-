@@ -9,7 +9,7 @@ Texture2D crab1Texture;
 // Função para inicializar o jogador (onde ele começa)//
 void InitPlayer() {
     crab1Texture = LoadTexture(
-        "assets/sprites/crabisson1.png"
+        "assets/player/crabisson1.png"
     );
     player.x = 450;
     player.y = 450;
