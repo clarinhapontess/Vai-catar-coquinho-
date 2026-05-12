@@ -64,10 +64,10 @@
 
 ## 📌 Status do projeto
 
-* [ ] Mecânica básica implementada
-* [ ] Sistema de vidas
-* [ ] Tipos de cocos
-* [ ] Sistema de pontuação
+* [x] Mecânica básica implementada
+* [x] Sistema de vidas
+* [x] Tipos de cocos
+* [x] Sistema de pontuação
 * [ ] Salvamento de top scores
 * [ ] Interface no terminal
 * [ ] Vídeo demonstrativo
