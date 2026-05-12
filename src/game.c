@@ -4,6 +4,12 @@
 
 #include "raylib.h"
 #include <stdlib.h>
+#include <math.h>
+
+// Texturas do background
+Texture2D areiaTexture;
+Texture2D marTexture;
+Texture2D coqueirosTexture;
 
 // pontuação do jogador
 int score = 0;
@@ -25,6 +31,10 @@ void InitGame() {
 
     InitPlayer();
     InitCocos();
+
+    areiaTexture = LoadTexture("assets/backgrounds/areia.png");
+    marTexture = LoadTexture("assets/backgrounds/mar.png");
+    coqueirosTexture = LoadTexture("assets/backgrounds/coqueiros.png");
 
     score = 0;
     vidas = 3;
@@ -155,6 +165,21 @@ void UpdateGame() {
 
 // desenha o jogo
 void DrawGame() {
+
+    // fundo azul céu
+    ClearBackground((Color){154, 244, 255, 255});
+    
+    // mar
+    int waveOffset = sinf(GetTime() * 1.3f) * 14;
+    DrawTexture(
+        marTexture, 
+        0, 
+        waveOffset, 
+        WHITE);
+    // areia
+    DrawTexture(areiaTexture, 0, 0, WHITE);
+    // coqueiros
+    DrawTexture(coqueirosTexture, 0, 0, WHITE);
 
     DrawPlayer();
     DrawCocos();

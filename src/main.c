@@ -15,7 +15,6 @@ int main() {
         UpdateGame();
 
         BeginDrawing();
-            ClearBackground(SKYBLUE);
 
             DrawGame();
 
