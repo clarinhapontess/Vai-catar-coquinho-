@@ -50,9 +50,13 @@
 
 ## ▶️ Como compilar e executar:
 
-Pelo terminal WSL:
-> gcc src/*.c -o build/jogo -lraylib -lGL -lm -lpthread -ldl -lrt -lX1
-> ./build/jogo
+No terminal WSL, compile o jogo com:
+
+gcc src/*.c -o build/jogo -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+
+Depois execute com:
+
+./build/jogo
 
 ## 📺 Slides de apresentação
 
