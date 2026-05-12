@@ -1,125 +1,153 @@
 #include "raylib.h"
 #include "coco.h"
-
 #include <stdlib.h>
 
-// REQUISITO: Ponteiro
-// Ponteiro para o primeiro elemento da lista encadeada
+// lista encadeada
 Node *listaCocos = NULL;
 
-// REQUISITO: Matriz
-// Matriz que controla áreas ocupadas pelos cocos
+// matriz de spawn
 int spawnAreas[2][5] = {0};
 
+// escolhe tipo do coco
+static void SetCocoType(Coco *coco) {
 
+    int chance = GetRandomValue(1, 100);
 
-// cria um novo coco //
+    if (chance <= 70) {
+        coco->type = 0;
+        coco->color = GREEN;
+        coco->speed = 2;
+    }
+    else if (chance <= 90) {
+        coco->type = 1;
+        coco->color = RED;
+        coco->speed = 2;
+    }
+    else if (chance <= 95) {
+        coco->type = 2;
+        coco->color = YELLOW;
+        coco->speed = 1;
+    }
+    else {
+        coco->type = 3;
+        coco->color = BLUE;
+        coco->speed = 1;
+    }
+}
+
+// adiciona coco
 void AddCoco() {
 
-    // REQUISITO: Alocação dinâmica
-    // Cria um novo nó dinamicamente na memória
     Node *novo = malloc(sizeof(Node));
+    if (novo == NULL) return;
 
-    int linha;
-    int coluna;
+    int linha, coluna;
 
-    // procura uma posição livre na matriz //
     do {
-
         linha = GetRandomValue(0, 1);
         coluna = GetRandomValue(0, 4);
-
     } while (spawnAreas[linha][coluna] == 1);
 
-    // marca essa posição como ocupada //
     spawnAreas[linha][coluna] = 1;
 
-    // tamanho das áreas da tela //
+    novo->coco.row = linha;
+    novo->coco.col = coluna;
+
     int larguraArea = 200;
     int alturaArea = 300;
 
-    // posiciona o coco horizontalmente //
     novo->coco.x = coluna * larguraArea + 100;
+    novo->coco.y = -(linha * alturaArea) - GetRandomValue(50, 300);
 
-    // posiciona o coco verticalmente acima da tela //
-    novo->coco.y = -(linha * alturaArea)
-                    - GetRandomValue(50, 300);
-
-    // velocidade inicial do coco //
-    novo->coco.speed = GetRandomValue(2, 3);
-
-    // tamanho do coco //
     novo->coco.radius = 20;
 
-    // REQUISITO: Lista encadeada + ponteiros
-    // o novo coco aponta para o antigo primeiro coco da lista
-    novo->next = listaCocos;
+    SetCocoType(&novo->coco);
 
-    // agora o novo coco vira o primeiro da lista
+    novo->next = listaCocos;
     listaCocos = novo;
 }
 
-
-
-// inicia os cocos //
+// inicializa
 void InitCocos() {
-
-    // cria 3 cocos no início do jogo
-    for (int i = 0; i < 3; i++) {
-
+    for (int i = 0; i < 5; i++) {
         AddCoco();
     }
 }
 
-
-
-// atualiza //
+// update
 void UpdateCocos() {
 
-    // começa pelo primeiro coco da lista
     Node *atual = listaCocos;
 
-    // percorre toda a lista encadeada
     while (atual != NULL) {
 
-        // move o coco para baixo
         atual->coco.y += atual->coco.speed;
 
-        // verifica se saiu da tela
         if (atual->coco.y > 600) {
 
-            // reposiciona acima da tela
-            atual->coco.y = GetRandomValue(-400, -30);
+            spawnAreas[atual->coco.row][atual->coco.col] = 0;
 
-            // nova posição horizontal
-            atual->coco.x = GetRandomValue(100, 900);
+            int linha, coluna;
+
+            do {
+                linha = GetRandomValue(0, 1);
+                coluna = GetRandomValue(0, 4);
+            } while (spawnAreas[linha][coluna] == 1);
+
+            spawnAreas[linha][coluna] = 1;
+
+            atual->coco.row = linha;
+            atual->coco.col = coluna;
+
+            atual->coco.x = coluna * 200 + 100;
+            atual->coco.y = -(linha * 300) - GetRandomValue(50, 300);
+
+            SetCocoType(&atual->coco);
         }
 
-        // passa para o próximo coco da lista
         atual = atual->next;
     }
 }
 
+// excluir cocos
+void ClearCocos() {
 
-
-// desenha //
-void DrawCocos() {
-
-    // começa pelo primeiro coco
     Node *atual = listaCocos;
 
-    // percorre todos os cocos
     while (atual != NULL) {
 
-        // desenha o coco na tela
+        Node *temp = atual;
+        atual = atual->next;
+
+        free(temp);
+    }
+
+    listaCocos = NULL;
+
+    // LIMPA MATRIZ DE SPAWN
+    for (int i = 0; i < 2; i++) {
+
+        for (int j = 0; j < 5; j++) {
+
+            spawnAreas[i][j] = 0;
+        }
+    }
+}
+
+// draw
+void DrawCocos() {
+
+    Node *atual = listaCocos;
+
+    while (atual != NULL) {
+
         DrawCircle(
             atual->coco.x,
             atual->coco.y,
             atual->coco.radius,
-            DARKBROWN
+            atual->coco.color
         );
 
-        // vai para o próximo coco
         atual = atual->next;
     }
 }

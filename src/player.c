@@ -5,7 +5,7 @@ Player player; // -> cria o player //
 
 // Função para inicializar o jogador (onde ele começa)//
 void InitPlayer() {
-    player.x = 500;
+    player.x = 450;
     player.y = 520;
     player.speed = 7; //-> velocidade do jogador //
     player.width = 100; //-> largura do jogador //
@@ -36,6 +36,6 @@ void DrawPlayer() {
     player.y,
     player.width,
     player.height,
-    BROWN
+    RED
 );
 }

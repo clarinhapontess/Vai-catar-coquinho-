@@ -1,12 +1,21 @@
 #ifndef COCO_H
 #define COCO_H
 
+#include "raylib.h"
+
 // estrutura para representar o coco //
 typedef struct {
     float x;
     float y;
     float speed;
     int radius;
+    //tipo e cor para diferenciar os cocos //
+    int type;
+    Color color;
+
+    // REQUISITO: matriz (posição do coco no grid)
+    int row;
+    int col;
 } Coco;
 
 //Lista encadeada + ponteiros //
@@ -22,6 +31,7 @@ void InitCocos();
 void UpdateCocos();
 void DrawCocos();
 void AddCocos();
+void ClearCocos();
 
 extern Node *listaCocos;
 
