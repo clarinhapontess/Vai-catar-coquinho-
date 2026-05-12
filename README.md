@@ -50,7 +50,9 @@
 
 ## ▶️ Como compilar e executar:
 
-> (futuramente explicação detalhada)
+Pelo terminal WSL:
+> gcc src/*.c -o build/jogo -lraylib -lGL -lm -lpthread -ldl -lrt -lX1
+> ./build/jogo
 
 ## 📺 Slides de apresentação
 
