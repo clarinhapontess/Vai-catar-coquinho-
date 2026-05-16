@@ -11,6 +11,9 @@ Texture2D areiaTexture;
 Texture2D marTexture;
 Texture2D coqueirosTexture;
 
+// musica de fundo
+Music musicaFundo;
+
 // pontuação do jogador
 int score = 0;
 
@@ -28,10 +31,14 @@ bool gameOver = false;
 
 // inicializa o jogo
 void InitGame() {
+    InitAudioDevice();
+    musicaFundo= LoadMusicStream("assets/audio/aPraieiraInstrumental.mp3");
+    PlayMusicStream(musicaFundo);
+
 
     InitPlayer();
     InitCocos();
-
+   
     areiaTexture = LoadTexture("assets/backgrounds/areia.png");
     marTexture = LoadTexture("assets/backgrounds/mar.png");
     coqueirosTexture = LoadTexture("assets/backgrounds/coqueiros.png");
@@ -45,6 +52,7 @@ void InitGame() {
 
 // atualiza o jogo
 void UpdateGame() {
+        UpdateMusicStream(musicaFundo);
 
     // restart
     if (gameOver && IsKeyPressed(KEY_ENTER)) {

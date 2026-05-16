@@ -22,6 +22,8 @@ int main() {
     }
 
     CloseWindow();
+    UnloadMusicStream(musicaFundo);
+    CloseAudioDevice();
 
     return 0;
 }

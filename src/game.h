@@ -2,6 +2,8 @@
 #define GAME_H
 
 #include <stdbool.h>
+#include "raylib.h"
+extern Music musicaFundo;
 
 void InitGame();
 void UpdateGame();
