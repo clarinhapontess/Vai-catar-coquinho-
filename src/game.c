@@ -14,6 +14,12 @@ Texture2D coqueirosTexture;
 // musica de fundo
 Music musicaFundo;
 
+// efeitos sonoros
+Sound ganhouPontos;
+Sound perdeuPontos;
+Sound morreu;
+Sound maisVidas;
+
 // pontuação do jogador
 int score = 0;
 
@@ -31,9 +37,13 @@ bool gameOver = false;
 
 // inicializa o jogo
 void InitGame() {
-    InitAudioDevice();
+    InitAudioDevice(); // inicializa áudios
     musicaFundo= LoadMusicStream("assets/audio/aPraieiraInstrumental.mp3");
     PlayMusicStream(musicaFundo);
+    ganhouPontos = LoadSound("assets/audio/ganhouPontos.mp3");
+    perdeuPontos = LoadSound("assets/audio/perdeuPontos.mp3");
+    morreu = LoadSound("assets/audio/morreu.mp3");
+    maisVidas = LoadSound("assets/audio/maisVidas.mp3");
 
 
     InitPlayer();
@@ -124,6 +134,7 @@ void UpdateGame() {
 
                     // COCO COMUM
                     if (atual->coco.type == 0) {
+                        PlaySound(ganhouPontos); // toca som de pontuação
 
                         if (bonusDourado) {
                             score += 2;
@@ -134,6 +145,7 @@ void UpdateGame() {
 
                     // COCO DOURADO
                     else if (atual->coco.type == 2) {
+                        PlaySound(ganhouPontos); // toca som de pontuação
 
                         bonusDourado = true;
                         bonusTimer = 20.0f;
@@ -141,6 +153,7 @@ void UpdateGame() {
 
                     // ÁGUA DE COCO
                     else if (atual->coco.type == 3) {
+                        PlaySound(maisVidas); // som + vidas
 
                         if (vidas < 3) {
                             vidas++;
@@ -149,6 +162,7 @@ void UpdateGame() {
 
                     // LIXO
                     else if (atual->coco.type == 1) {
+                        PlaySound(perdeuPontos); // som de perder pontos
 
                         if (!bonusDourado) {
                             vidas--;
@@ -168,6 +182,7 @@ void UpdateGame() {
     // verifica game over
     if (vidas <= 0) {
         gameOver = true;
+        PlaySound(morreu); // som morreu
     }
 }
 

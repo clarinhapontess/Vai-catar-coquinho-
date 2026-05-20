@@ -9,7 +9,9 @@ typedef struct {
     float y;
     float speed;
     int radius;
+    
     //tipo e cor para diferenciar os cocos //
+    int sprite;
     int type;
     Color color;
 

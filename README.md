@@ -50,7 +50,13 @@
 
 ## ▶️ Como compilar e executar:
 
-> (futuramente explicação detalhada)
+No terminal WSL, compile o jogo com:
+
+gcc src/*.c -o build/jogo -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+
+Depois execute com:
+
+./build/jogo
 
 ## 📺 Slides de apresentação
 
@@ -68,8 +74,11 @@
 * [x] Sistema de vidas
 * [x] Tipos de cocos
 * [x] Sistema de pontuação
+* [ ] Mecânica avançada
 * [ ] Salvamento de top scores
 * [ ] Interface no terminal
+* [ ] Música e efeitos sonoros
+* [ ] tela de ínicio + game over
 * [ ] Vídeo demonstrativo
 * [ ] Slides
 

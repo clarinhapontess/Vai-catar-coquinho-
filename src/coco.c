@@ -5,6 +5,13 @@
 // lista encadeada
 Node *listaCocos = NULL;
 
+// texturas
+Texture2D cocoTexture;
+Texture2D lataTexture;
+Texture2D garrafaTexture;
+Texture2D douradoTexture;
+Texture2D aguaTexture;
+
 // matriz de spawn
 int spawnAreas[2][5] = {0};
 
@@ -13,24 +20,32 @@ static void SetCocoType(Coco *coco) {
 
     int chance = GetRandomValue(1, 100);
 
+    // coco normal
     if (chance <= 70) {
+
         coco->type = 0;
-        coco->color = GREEN;
         coco->speed = 2;
     }
+
+    // lixo
     else if (chance <= 90) {
+
         coco->type = 1;
-        coco->color = RED;
         coco->speed = 2;
+        coco->sprite = GetRandomValue(0, 1);
     }
+
+    // coco dourado
     else if (chance <= 95) {
+
         coco->type = 2;
-        coco->color = YELLOW;
         coco->speed = 1;
     }
+
+    // água de coco
     else {
+
         coco->type = 3;
-        coco->color = BLUE;
         coco->speed = 1;
     }
 }
@@ -39,13 +54,16 @@ static void SetCocoType(Coco *coco) {
 void AddCoco() {
 
     Node *novo = malloc(sizeof(Node));
+
     if (novo == NULL) return;
 
     int linha, coluna;
 
     do {
+
         linha = GetRandomValue(0, 1);
         coluna = GetRandomValue(0, 4);
+
     } while (spawnAreas[linha][coluna] == 1);
 
     spawnAreas[linha][coluna] = 1;
@@ -69,7 +87,22 @@ void AddCoco() {
 
 // inicializa
 void InitCocos() {
+
+    // carrega texturas
+    cocoTexture = LoadTexture("assets/cocos/coco.png");
+
+    lataTexture = LoadTexture("assets/cocos/lata.png");
+
+    garrafaTexture = LoadTexture("assets/cocos/garrafa.png");
+
+    douradoTexture = LoadTexture("assets/cocos/dourado.png");
+
+    aguaTexture = LoadTexture("assets/cocos/agua.png");
+    
+
+    // cria cocos
     for (int i = 0; i < 5; i++) {
+
         AddCoco();
     }
 }
@@ -83,15 +116,18 @@ void UpdateCocos() {
 
         atual->coco.y += atual->coco.speed;
 
-        if (atual->coco.y > 600) {
+        // respawn quando sai da tela
+        if (atual->coco.y > 650) {
 
             spawnAreas[atual->coco.row][atual->coco.col] = 0;
 
             int linha, coluna;
 
             do {
+
                 linha = GetRandomValue(0, 1);
                 coluna = GetRandomValue(0, 4);
+
             } while (spawnAreas[linha][coluna] == 1);
 
             spawnAreas[linha][coluna] = 1;
@@ -117,6 +153,7 @@ void ClearCocos() {
     while (atual != NULL) {
 
         Node *temp = atual;
+
         atual = atual->next;
 
         free(temp);
@@ -124,7 +161,7 @@ void ClearCocos() {
 
     listaCocos = NULL;
 
-    // LIMPA MATRIZ DE SPAWN
+    // limpa matriz
     for (int i = 0; i < 2; i++) {
 
         for (int j = 0; j < 5; j++) {
@@ -141,11 +178,54 @@ void DrawCocos() {
 
     while (atual != NULL) {
 
-        DrawCircle(
-            atual->coco.x,
-            atual->coco.y,
-            atual->coco.radius,
-            atual->coco.color
+        Texture2D texturaAtual;
+
+        // coco normal
+        if (atual->coco.type == 0) {
+
+            texturaAtual = cocoTexture;
+        }
+
+        // lixo
+        else if (atual->coco.type == 1) {
+
+            // escolhe entre lata e garrafa
+            if (atual->coco.sprite == 0){
+
+                texturaAtual = lataTexture;
+
+            } else {
+
+                texturaAtual = garrafaTexture;
+            }
+        }
+
+        // coco dourado
+        else if (atual->coco.type == 2) {
+
+            texturaAtual = douradoTexture;
+        }
+
+        // água de coco
+        else {
+
+            texturaAtual = aguaTexture;
+        }
+
+        DrawTextureEx(
+
+            texturaAtual,
+
+            (Vector2){
+                atual->coco.x - 32,
+                atual->coco.y - 32
+            },
+
+            0.0f,
+
+            1.0f,
+
+            WHITE
         );
 
         atual = atual->next;
