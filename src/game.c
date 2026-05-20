@@ -207,22 +207,25 @@ void DrawGame() {
     DrawPlayer();
     DrawCocos();
 
+    // rodape
+    DrawRectangle(0, 560, 1000, 40, Fade(WHITE, 0.3f)); // branco bem transparente
+
     // score
     DrawText(
         TextFormat("Cocos: %i", score),
-        20,
-        20,
-        30,
-        DARKGREEN
+        350,
+        568,
+        24,
+        BLACK
     );
 
     // vidas
     DrawText(
         TextFormat("Vidas: %i", vidas),
-        20,
-        60,
-        30,
-        RED
+        550,
+        568,
+        24,
+        BLACK
     );
 
     // bônus dourado
