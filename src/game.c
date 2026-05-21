@@ -38,8 +38,9 @@ bool gameOver = false;
 // inicializa o jogo
 void InitGame() {
     InitAudioDevice(); // inicializa áudios
-    musicaFundo= LoadMusicStream("assets/audio/aPraieiraInstrumental.mp3");
+    musicaFundo= LoadMusicStream("assets/audio/aPraieraInstrumental.mp3");
     PlayMusicStream(musicaFundo);
+    SetMusicVolume(musicaFundo, 0.5f); // volume mais baixo para não atrapalhar os efeitos sonoros
     ganhouPontos = LoadSound("assets/audio/ganhouPontos.mp3");
     perdeuPontos = LoadSound("assets/audio/perdeuPontos.mp3");
     morreu = LoadSound("assets/audio/morreu.mp3");
