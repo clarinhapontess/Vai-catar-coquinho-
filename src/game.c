@@ -2,10 +2,11 @@
 #include "player.h"
 #include "coco.h"
 
-#include "raylib.h"
+#include <raylib.h>
 #include <stdlib.h>
 #include <math.h>
-
+#include <time.h>
+#include "player.h"
 // Texturas do background
 Texture2D areiaTexture;
 Texture2D marTexture;
@@ -34,7 +35,12 @@ float bonusTimer = 0;
 
 // game over
 bool gameOver = false;
-
+//timer do tempo do jogo 
+float gameTimer = 0.0f;
+//fator de mutiplicação da velocidade dos cocos (+)
+float cocoSpeedMultiplier = 1.0f;
+//fator de mutiplicação da velocidade do jogador  (-)
+float playerSpeedMultiplier = 1.0f;
 // inicializa o jogo
 void InitGame() {
     InitAudioDevice(); // inicializa áudios
@@ -60,9 +66,21 @@ void InitGame() {
     bonusTimer = 0;
     gameOver = false;
 }
-
+//função que faz o jogo ficar mais dificil ao longo do tempo 
+void UpdateGameProgression(float deltaTime) {
+    gameTimer += deltaTime;
+    
+    // Cocos aumentam velocidade
+    cocoSpeedMultiplier = 1.0f + (gameTimer / 45.0f) * 0.6f;
+    
+    // Player diminui velocidade
+    playerSpeedMultiplier = 1.0f - (gameTimer / 45.0f) * 0.05f;
+    if (playerSpeedMultiplier < 0.5f) {
+        playerSpeedMultiplier = 0.5f;
+    }
+}
 // atualiza o jogo
-void UpdateGame() {
+void UpdateGame(float deltaTime) {
         UpdateMusicStream(musicaFundo);
 
     // restart
@@ -86,13 +104,12 @@ void UpdateGame() {
 
         return;
     }
-
+    UpdateGameProgression(deltaTime);
+    Updatecoco(deltaTime);
     // cocos SEMPRE atualizam
-    UpdateCocos();
-
     // player só atualiza se não estiver morto
     if (!gameOver) {
-        UpdatePlayer();
+        UpdatePlayer( deltaTime);
     }
 
     // atualiza timer do bônus dourado
@@ -186,7 +203,6 @@ void UpdateGame() {
         PlaySound(morreu); // som morreu
     }
 }
-
 // desenha o jogo
 void DrawGame() {
 

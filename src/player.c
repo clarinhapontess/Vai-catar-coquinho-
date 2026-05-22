@@ -19,13 +19,19 @@ void InitPlayer() {
 }
 
 // Função para mover o jogador com o teclado //
-void UpdatePlayer() {
-    //teclas para movimentar o jogador//
-    if (IsKeyDown(KEY_LEFT))
-        player.x -= player.speed;
-
-    if (IsKeyDown(KEY_RIGHT))
-        player.x += player.speed;
+void UpdatePlayer(float deltaTime) {
+  extern float playerSpeedMultiplier;//vai multiplicar a velocidade base por esse
+    
+    float baseSpeed = 300.0f;  // Velocidade base
+    float speedAtual = baseSpeed * playerSpeedMultiplier;
+    //tecla para movimentar o jogador para a esquerda
+    if (IsKeyDown(KEY_LEFT)) {
+        player.x -= speedAtual * deltaTime;
+    }
+    //tecla para movimentar o jogador para a direita
+    if (IsKeyDown(KEY_RIGHT)) {
+        player.x += speedAtual * deltaTime;
+    }
 
     //delimita o jogador a area visivel da tela//
     if (player.x < 45)

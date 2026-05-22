@@ -12,7 +12,8 @@ int main() {
     // Loop principal do jogo //
     while (!WindowShouldClose()) {
 
-        UpdateGame();
+        float deltaTime = GetFrameTime();
+        UpdateGame(deltaTime);
 
         BeginDrawing();
 

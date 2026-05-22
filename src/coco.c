@@ -1,10 +1,10 @@
 #include "raylib.h"
 #include "coco.h"
 #include <stdlib.h>
-
+#include "game.h"  // Isso dá acesso ao extern gameTimer
 // lista encadeada
 Node *listaCocos = NULL;
-
+//criando o head da lista encadeada e atribuindo à Null
 // texturas
 Texture2D cocoTexture;
 Texture2D lataTexture;
@@ -53,7 +53,7 @@ static void SetCocoType(Coco *coco) {
 // adiciona coco
 void AddCoco() {
 
-    Node *novo = malloc(sizeof(Node));
+    Node *novo = (Node*)malloc(sizeof(Node));
 
     if (novo == NULL) return;
 
@@ -65,6 +65,8 @@ void AddCoco() {
         coluna = GetRandomValue(0, 4);
 
     } while (spawnAreas[linha][coluna] == 1);
+    //vai ficar sorteando valores para linha e coluna ocupados pelo coco até dar um espaço não ocupado 
+    //while (spawnAreas[linha][coluna] == 0);
 
     spawnAreas[linha][coluna] = 1;
 
@@ -108,7 +110,9 @@ void InitCocos() {
 }
 
 // update
-void UpdateCocos() {
+void Updatecoco(float deltaTime) {
+
+  
 
     Node *atual = listaCocos;
 

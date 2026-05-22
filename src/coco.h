@@ -1,10 +1,10 @@
 #ifndef COCO_H
 #define COCO_H
-
 #include "raylib.h"
 
 // estrutura para representar o coco //
-typedef struct {
+//o coco é um item da lista de cocos 
+typedef struct coco {
     float x;
     float y;
     float speed;
@@ -30,7 +30,7 @@ typedef struct Node {
 
 // declaração das funções para o coco //
 void InitCocos();
-void UpdateCocos();
+void Updatecoco(float deltaTime);
 void DrawCocos();
 void AddCocos();
 void ClearCocos();

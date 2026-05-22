@@ -1,19 +1,33 @@
 #ifndef GAME_H
 #define GAME_H
-
-#include <stdbool.h>
+#include "stdbool.h"
 #include "raylib.h"
+// Texturas
+extern Texture2D areiaTexture;
+extern Texture2D marTexture;
+extern Texture2D coqueirosTexture;
+
+// Música e efeitos
 extern Music musicaFundo;
+extern Sound ganhouPontos;
+extern Sound perdeuPontos;
+extern Sound morreu;
+extern Sound maisVidas;
 
-void InitGame();
-void UpdateGame();
-void DrawGame();
-
+// Variáveis do jogo
 extern int score;
 extern int vidas;
-
-// Bônus dourado //
 extern bool bonusDourado;
+extern bool gameOver;
 extern float bonusTimer;
+extern float gameTimer;
+extern float cocoSpeedMultiplier;
+extern float playerSpeedMultiplier;
+
+// Funções
+void InitGame();
+void UpdateGame(float deltaTime);
+void DrawGame();
+void UpdateGameProgression(float deltaTime);
 
 #endif
