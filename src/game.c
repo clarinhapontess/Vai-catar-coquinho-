@@ -74,9 +74,9 @@ void UpdateGameProgression(float deltaTime) {
     cocoSpeedMultiplier = 1.0f + (gameTimer / 45.0f) * 0.6f;
     
     // Player diminui velocidade
-    playerSpeedMultiplier = 1.0f - (gameTimer / 45.0f) * 0.05f;
-    if (playerSpeedMultiplier < 0.5f) {
-        playerSpeedMultiplier = 0.5f;
+    playerSpeedMultiplier = 1.0f - (gameTimer / 45.0f) * 0.025f;
+    if (playerSpeedMultiplier < 0.0125f) {
+        playerSpeedMultiplier = 0.0125f;
     }
 }
 // atualiza o jogo

@@ -26,7 +26,7 @@ void UpdatePlayer(float deltaTime) {
     float speedAtual = baseSpeed * playerSpeedMultiplier;
     //tecla para movimentar o jogador para a esquerda
     if (IsKeyDown(KEY_LEFT)) {
-        player.x -= speedAtual * deltaTime;
+         player.x -= speedAtual * deltaTime;
     }
     //tecla para movimentar o jogador para a direita
     if (IsKeyDown(KEY_RIGHT)) {
