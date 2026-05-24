@@ -69,14 +69,32 @@ void InitGame() {
 //função que faz o jogo ficar mais dificil ao longo do tempo 
 void UpdateGameProgression(float deltaTime) {
     gameTimer += deltaTime;
-    
-    // Cocos aumentam velocidade
+
+    // Cocos aumentam velocidade com o tempo
     cocoSpeedMultiplier = 1.0f + (gameTimer / 45.0f) * 0.6f;
-    
-    // Player diminui velocidade
-    playerSpeedMultiplier = 1.0f - (gameTimer / 45.0f) * 0.025f;
-    if (playerSpeedMultiplier < 0.0125f) {
-        playerSpeedMultiplier = 0.0125f;
+
+    // SE TIVER BÔNUS, reduz velocidade dos cocos
+    if (bonusDourado) {
+        cocoSpeedMultiplier *= 0.5f;
+    }
+
+    // Player fica mais lento conforme perde vidas (INVERSO ao número de vidas)
+    switch (vidas) {
+        case 3:
+      //caso a qntd da var vidas for == 3   
+            playerSpeedMultiplier = 1.0f;   // 3 vidas = velocidade normal
+            break;
+        case 2:
+      //caso a qntd da var vidas for == 2 
+            playerSpeedMultiplier = 0.7f;   // 2 vidas = 70% da velocidade
+            break;
+        case 1:
+        //caso a qntd da var vidas for == 1 
+            playerSpeedMultiplier = 0.4f;   // 1 vida = 40% da velocidade
+            break;
+        default:
+            playerSpeedMultiplier = 1.0f;
+            break;
     }
 }
 // atualiza o jogo
@@ -114,7 +132,7 @@ void UpdateGame(float deltaTime) {
 
     // atualiza timer do bônus dourado
     if (bonusDourado) {
-
+        //a variavel contadora de tempo do 
         bonusTimer -= GetFrameTime();
 
         if (bonusTimer <= 0) {
@@ -169,7 +187,7 @@ void UpdateGame(float deltaTime) {
                         bonusTimer = 20.0f;
                     }
 
-                    // ÁGUA DE COCO
+                    // ÁGUA DE CO1CO
                     else if (atual->coco.type == 3) {
                         PlaySound(maisVidas); // som + vidas
 
