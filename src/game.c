@@ -1,7 +1,7 @@
 #include "game.h"
 #include "player.h"
 #include "coco.h"
-
+#include <stdio.h>
 #include <raylib.h>
 #include <stdlib.h>
 #include <math.h>
@@ -132,7 +132,7 @@ void UpdateGame(float deltaTime) {
 
     // atualiza timer do bônus dourado
     if (bonusDourado) {
-        //a variavel contadora de tempo do 
+        //o tempo do 
         bonusTimer -= GetFrameTime();
 
         if (bonusTimer <= 0) {
@@ -187,7 +187,7 @@ void UpdateGame(float deltaTime) {
                         bonusTimer = 20.0f;
                     }
 
-                    // ÁGUA DE CO1CO
+                    // ÁGUA DE COCO
                     else if (atual->coco.type == 3) {
                         PlaySound(maisVidas); // som + vidas
 
@@ -276,38 +276,12 @@ void DrawGame() {
     }
 
     // game over
-    if (gameOver) {
-
-        DrawRectangle(
-            0,
-            0,
-            1000,
-            600,
-            Fade(BLACK, 0.7f)
-        );
-
-        DrawText(
-            "GAME OVER",
-            250,
-            180,
-            50,
-            RED
-        );
-
-        DrawText(
-            TextFormat("Score final: %d", score),
-            250,
-            250,
-            30,
-            WHITE
-        );
-
-        DrawText(
-            "Press ENTER to restart",
-            250,
-            300,
-            20,
-            GRAY
-        );
-    }
+if (gameOver) {
+    DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
+    DrawText("GAME OVER", 1000/2 - MeasureText("GAME OVER", 80)/2, 150, 80, GOLD);
+    char scoreText[50];
+    sprintf(scoreText, "Score final: %d", score);
+    DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 300, 60, GOLD);
+    DrawText("Press ENTER to restart", 1000/2 - MeasureText("Press ENTER to restart", 40)/2, 450, 40, DARKBLUE);
+}
 }
