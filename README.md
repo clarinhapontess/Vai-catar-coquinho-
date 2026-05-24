@@ -15,7 +15,7 @@
 
 * **Coco normal:** +1 ponto
 * **Lixo na praia:** -1 vida
-* **Coco dourado:** desacelera os cocos e dobra os pontos
+* **Coco dourado:** desacelera os cocos , dobra os pontos e previne você de perder vidas coletando lixo  
 * **Água de coco:** +1 vida
 
 💀 **Fim de jogo:** O jogador perde quando suas vidas chegam a 0.
