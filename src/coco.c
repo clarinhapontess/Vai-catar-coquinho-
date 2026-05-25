@@ -21,14 +21,14 @@ static void SetCocoType(Coco *coco) {
     int chance = GetRandomValue(1, 100);
 
     // coco normal
-    if (chance <= 70) {
+    if (chance <= 60) {
 
         coco->type = 0;
         coco->speed = 2;
     }
 
     // lixo
-    else if (chance <= 90) {
+    else if (chance <= 95) {
 
         coco->type = 1;
         coco->speed = 2;
@@ -36,7 +36,7 @@ static void SetCocoType(Coco *coco) {
     }
 
     // coco dourado
-    else if (chance <= 95) {
+    else if (chance <= 98) {
 
         coco->type = 2;
         coco->speed = 1;
@@ -103,7 +103,7 @@ void InitCocos() {
     
 
     // cria cocos
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 2; i++) {
 
         AddCoco();
     }
