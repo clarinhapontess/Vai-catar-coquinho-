@@ -7,119 +7,113 @@
 #include <math.h>
 #include <time.h>
 
-// Texturas do background
+// Texturas do background //
 Texture2D areiaTexture;
-Texture2D mar1Texture;      // Camada de trás
-Texture2D mar2Texture;      // Camada da frente
+Texture2D mar1Texture;
+Texture2D mar2Texture;
 Texture2D coqueirosTexture;
 
-// Áudio
-Music musicaFundo;
+// Música e efeitos sonoros //
+Music musicaFundo; 
 Sound ganhouPontos;
 Sound perdeuPontos;
 Sound morreu;
 Sound maisVidas;
 
-// Variáveis globais do estado do jogo
+// Variáveis globais do estado do jogo //
 int score = 0;
 int vidas = 3;
 bool bonusDourado = false;
 float bonusTimer = 0;
 bool gameOver = false;
-float gameTimer = 0.0f;
+float gameTimer = 0;
+float playerSpeedMultiplier = 1.0f; // CRIADO: Definição oficial da variável global! //
 
-// Multiplicadores de velocidade
-float cocoSpeedMultiplier = 1.0f;
-float playerSpeedMultiplier = 1.0f;
+// adiciona cocos conforme dificuldade aumenta //
+int cocosAdicionados = 2;
 
-// Controle de progressão da quantidade de cocos na tela
-int cocosAdicionados = 2; 
-
-// Inicializa todo o ecossistema do jogo
+// inicializa o jogo //
 void InitGame() {
-    InitAudioDevice(); 
+    InitAudioDevice();
+
+    // MUSICA DE FUNDO //
     musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.mp3");
     PlayMusicStream(musicaFundo);
-    SetMusicVolume(musicaFundo, 0.5f); 
-    
+    SetMusicVolume(musicaFundo, 0.5f);
+
+    // EFEITOS SONOROS //
     ganhouPontos = LoadSound("assets/audio/ganhouPontos.mp3");
     perdeuPontos = LoadSound("assets/audio/perdeuPontos.mp3");
-    morreu = LoadSound("assets/audio/morreu.mp3");
+    morreu = LoadSound("assets/audio/morreu.mp3"); // ALTERADO: minúsculo //
     maisVidas = LoadSound("assets/audio/maisVidas.mp3");
 
-    InitPlayer();
-    InitCocos();
-   
+    InitPlayer(); // Inicializa o jogador //
+    InitCocos(); // Inicializa os cocos //
+
+    // CARREGA AS TEXTURAS DO BACKGROUND //
     areiaTexture = LoadTexture("assets/backgrounds/areia.png");
     mar1Texture = LoadTexture("assets/backgrounds/mar1.png");
     mar2Texture = LoadTexture("assets/backgrounds/mar2.png");
     coqueirosTexture = LoadTexture("assets/backgrounds/coqueiros.png");
 
+    // Inicializa as variáveis do jogo //
     score = 0;
     vidas = 3;
     bonusDourado = false;
     bonusTimer = 0;
     gameOver = false;
-    cocosAdicionados = 2;
-    gameTimer = 0.0f;
+    gameTimer = 0;
+    playerSpeedMultiplier = 1.0f; // Reseta a velocidade ao iniciar //
 }
 
-// Controla a dificuldade progressiva (Velocidades e Quantidades)
+// Dificuldade progressiva //
 void UpdateGameProgression(float deltaTime) {
     gameTimer += deltaTime;
-    extern void AddCoco(); // Vincula a função que está no coco.c
+    extern void AddCoco(); // funcao em coco.c //
 
-    // --- PROGRESSÃO DA QUANTIDADE DE COCOS ---
-    // Marco de 30 pontos -> adiciona o 3º coco
     if (score >= 30 && cocosAdicionados == 2) {
-        AddCoco(); 
+        AddCoco();
         cocosAdicionados = 3;
-    }
-    // Marco de 100 pontos -> adiciona o 4º coco
-    if (score >= 100 && cocosAdicionados == 3) {
+    } else if (score >= 50 && cocosAdicionados == 3) {
         AddCoco();
         cocosAdicionados = 4;
-    }
-    // Marco de 150 pontos -> adiciona o 5º coco
-    if (score >= 150 && cocosAdicionados == 4) {
+    } else if (score >= 100 && cocosAdicionados == 4) {
         AddCoco();
-        cocosAdicionados = 5;
+        AddCoco();
+        cocosAdicionados = 6;
     }
 
-    // Player fica mais lento conforme perde vidas
+    // Player fica mais lento ao perder vidas //
     switch (vidas) {
-        case 3:
-            playerSpeedMultiplier = 1.0f;   
-            break;
         case 2:
-            playerSpeedMultiplier = 0.7f;   
+            playerSpeedMultiplier = 0.6f; // Velocidade reduzida //
             break;
         case 1:
-            playerSpeedMultiplier = 0.4f;   
+            playerSpeedMultiplier = 0.4f; // Velocidade reduzida //
             break;
         default:
-            playerSpeedMultiplier = 1.0f;
+            playerSpeedMultiplier = 1.0f; // Velocidade normal //
             break;
     }
 }
 
-// Lógica de iteração e regras de negócio do jogo
-void UpdateGame(float deltaTime) {
+// Atualiza o estado do jogo //
+void UpdateGame (float deltaTime) {
     UpdateMusicStream(musicaFundo);
 
-    // Sistema de RESTART
+    // RESTART //
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
         gameOver = false;
         score = 0;
         vidas = 3;
-        gameTimer = 0.0f; 
         bonusDourado = false;
         bonusTimer = 0;
-        cocosAdicionados = 2; // Reseta o limite inicial de cocos
+        gameTimer = 0;
+        cocosAdicionados = 2;
 
-        ClearCocos();
-        InitPlayer();
-        InitCocos();
+        ClearCocos(); 
+        InitCocos(); 
+        InitPlayer(); 
 
         PlayMusicStream(musicaFundo); 
         return;
@@ -127,12 +121,12 @@ void UpdateGame(float deltaTime) {
 
     UpdateGameProgression(deltaTime);
     Updatecoco(deltaTime);
-    
+
     if (!gameOver) {
         UpdatePlayer(deltaTime);
     }
 
-    // Atualiza o timer do bônus dourado
+    // Atualiza timer do bônus dourado //
     if (bonusDourado) {
         bonusTimer -= GetFrameTime();
         if (bonusTimer <= 0) {
@@ -140,7 +134,7 @@ void UpdateGame(float deltaTime) {
         }
     }
 
-    // Loop de colisões da lista encadeada
+    // Loop de colisão //
     if (!gameOver) {
         Node *atual = listaCocos;
 
@@ -151,92 +145,97 @@ void UpdateGame(float deltaTime) {
                 player.width,
                 player.height
             };
-
+            
             Vector2 cocoCenter = {
                 atual->coco.x,
                 atual->coco.y
             };
 
             if (CheckCollisionCircleRec(cocoCenter, atual->coco.radius, playerRect)) {
-                // Colisão apenas na parte superior do Crabsson
+                // colisão apenas por cima //
                 if (cocoCenter.y < playerRect.y + playerRect.height * 0.3f) {
-
-                    // COCO COMUM
+                    
+                    // COCO NORMAL //
                     if (atual->coco.type == 0) {
-                        PlaySound(ganhouPontos); 
-                        if (bonusDourado) score += 2;
-                        else score += 1;
+                        PlaySound(ganhouPontos);
+                        if (bonusDourado) {
+                            score += 2;
+                        } else {
+                            score += 1;
+                        }
                     }
-                    // COCO DOURADO
+                    // LIXO //
+                    else if (atual->coco.type == 1) {
+                        PlaySound(perdeuPontos);
+                        score -= 1;
+                        if (score < 0) score = 0;
+                        vidas--; 
+                    }
+                    // COCO DOURADO //
                     else if (atual->coco.type == 2) {
-                        PlaySound(ganhouPontos); 
+                        PlaySound(ganhouPontos);
                         bonusDourado = true;
-                        bonusTimer = 20.0f;
+                        bonusTimer = 20.0f; 
                     }
-                    // ÁGUA DE COCO
+                    // AGUA DE COCO //
                     else if (atual->coco.type == 3) {
-                        PlaySound(maisVidas); 
+                        PlaySound(maisVidas);
                         if (vidas < 3) vidas++;
                     }
-                    // LIXO
-                    else if (atual->coco.type == 1) {
-                        PlaySound(perdeuPontos); 
-                        if (!bonusDourado) vidas--;
-                    }
 
-                    // Reseta o item colidido de volta pro topo
+                    // Reseta o coco para o topo da tela //
                     atual->coco.y = GetRandomValue(-400, -30);
                     atual->coco.x = GetRandomValue(50, 750);
 
-                    extern void SetCocoType(Coco *coco); // Avisa o C que essa função existe no coco.c
-                    SetCocoType(&atual->coco);          // Sorteia um novo tipo e velocidade!
+                    extern void SetCocoType(Coco *coco); 
+                    SetCocoType(&atual->coco); 
                 }
             }
-            atual = atual->next;
+            atual = atual->next; 
         }
     }
 
-    // Trigger de verificação do Game Over
+    // Verificando Game Over //
     if (vidas <= 0 && !gameOver) {
+        PlaySound(morreu);
         gameOver = true;
-        StopMusicStream(musicaFundo); 
-        PlaySound(morreu);           
+        StopMusicStream(musicaFundo);
     }
 }
 
-// Renderização dos elementos visuais
+// Desenha o jogo na tela //
 void DrawGame() {
-    ClearBackground((Color){154, 244, 255, 255}); // Céu azul
-    
+    ClearBackground((Color){154, 244, 255, 255});
+
+    // Mar //
     float tempoAtual = GetTime();
-    
-    // Mar de Trás (Seno normal)
-    int waveOffset1 = sinf(tempoAtual * 1.5f) * 8;
-    DrawTexture(mar1Texture, 0, waveOffset1, WHITE);
-    
-    // Mar da Frente (Mesmo balanço com atraso de fase orgânico)
-    int waveOffset2 = sinf((tempoAtual * 1.5f) + 1.0f) * 8;
+
+    int waveOffset = sinf(tempoAtual * 1.5f) * 8;
+    DrawTexture(mar1Texture, 0, waveOffset, WHITE);
+
+    int waveOffset2 = sinf(tempoAtual * 1.5f + 1.0f) * 8;
     DrawTexture(mar2Texture, 0, waveOffset2, WHITE);
-    
+
+    // Areia e coqueiros //
     DrawTexture(areiaTexture, 0, 0, WHITE);
     DrawTexture(coqueirosTexture, 0, 0, WHITE);
 
-    DrawPlayer();
     DrawCocos();
+    DrawPlayer();
 
-    // UI - Rodapé transparente
-    DrawRectangle(0, 560, 1000, 40, Fade(WHITE, 0.3f)); 
+    // Rodape transparente //
+    DrawRectangle(0, 560, 1000, 40, Fade(WHITE, 0.3f));
 
-    // Textos de Pontuação e Vidas
-    DrawText(TextFormat("Cocos: %i", score), 350, 568, 24, BLACK);
+    // Exibe pontuação e vidas //
+    DrawText(TextFormat("Cocos: %i", score), 150, 568, 24, BLACK);
     DrawText(TextFormat("Vidas: %i", vidas), 550, 568, 24, BLACK);
 
-    // Alerta visual do bônus ativado
+    // Bonus dourado ativo //
     if (bonusDourado) {
-        DrawText(TextFormat("BONUS: %.0f", bonusTimer), 20, 100, 30, GOLD);
+        DrawText(TextFormat("Bônus: %.0f", bonusTimer), 300, 568, 24, GOLD);
     }
 
-    // Tela de Game Over overlay
+    // Tela de Game Over //
     if (gameOver) {
         DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
         DrawText("GAME OVER", 1000/2 - MeasureText("GAME OVER", 80)/2, 150, 80, GOLD);

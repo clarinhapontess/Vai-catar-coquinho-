@@ -10,11 +10,11 @@ typedef struct {
     int height;
 } Player;
 
-// Variável global para o jogador //
+// Variáveis globais para o jogador //
 void InitPlayer();
 void UpdatePlayer(float deltaTime);
 void DrawPlayer();
 
-extern Player player; // -> Permite que outros arquivos usem: player.x, player.y, player.speed //
+extern Player player; // Permite que outros arquivos usem: player.x e player.y //
 
 #endif
