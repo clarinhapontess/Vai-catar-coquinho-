@@ -1,16 +1,17 @@
 #ifndef COCO_H
 #define COCO_H
+
 #include "raylib.h"
 
-// estrutura para representar o coco //
-//o coco é um item da lista de cocos 
+// Estrutura para representar o coco //
+// O coco é um item da lista de cocos 
 typedef struct coco {
     float x;
     float y;
     float speed;
     int radius;
     
-    //tipo e cor para diferenciar os cocos //
+    // Tipo e cor para diferenciar os cocos //
     int sprite;
     int type;
     Color color;
@@ -20,19 +21,17 @@ typedef struct coco {
     int col;
 } Coco;
 
-//Lista encadeada + ponteiros //
+// Lista encadeada + ponteiros //
 typedef struct Node {
-
     Coco coco;
     struct Node *next; // -> ponteiro para o próximo nó (coco) da lista //
-
 } Node;
 
-// declaração das funções para o coco //
+// Declaração das funções para o coco //
 void InitCocos();
 void Updatecoco(float deltaTime);
 void DrawCocos();
-void AddCocos();
+void AddCoco(); // <-- Corrigido aqui para o singular (combinando com o coco.c)
 void ClearCocos();
 
 extern Node *listaCocos;

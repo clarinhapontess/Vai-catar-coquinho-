@@ -4,7 +4,8 @@
 #include "raylib.h"
 // Texturas
 extern Texture2D areiaTexture;
-extern Texture2D marTexture;
+extern Texture2D mar1Texture;
+extern Texture2D mar2Texture;
 extern Texture2D coqueirosTexture;
 
 // Música e efeitos
