@@ -1,7 +1,7 @@
 #include "game.h"
 #include "player.h"
 #include "coco.h"
-
+#include <stdio.h>
 #include "raylib.h"
 #include <stdlib.h>
 #include <math.h>
@@ -19,6 +19,9 @@ Sound ganhouPontos;
 Sound perdeuPontos;
 Sound morreu;
 Sound maisVidas;
+
+// ranking
+int ranking[RANKING] = {0,0,0,0,0};
 
 // pontuação do jogador
 int score = 0;
@@ -49,6 +52,7 @@ void InitGame() {
 
     InitPlayer();
     InitCocos();
+    CarregarRanking();
    
     areiaTexture = LoadTexture("assets/backgrounds/areia.png");
     marTexture = LoadTexture("assets/backgrounds/mar.png");
@@ -184,6 +188,7 @@ void UpdateGame() {
     if (vidas <= 0) {
         gameOver = true;
         PlaySound(morreu); // som morreu
+        InserirNoRanking(score); // insere pontuaçaõ
     }
 }
 
@@ -244,12 +249,23 @@ void DrawGame() {
     // game over
     if (gameOver) {
 
+        DrawText("Top 5 recordes:", 250, 340, 24, WHITE);
+        for (int i = 0; i < RANKING ; i++){
+            DrawText(
+                TextFormat("%d. %d", i + 1, ranking[i]),
+                250, // posição x
+                370 + i * 30, // posição y começa em 370 e desce 30 pixels a cada linha di ranking
+                22, // tamanho da fonte
+                WHITE // cor
+            );
+        }
+
         DrawRectangle(
             0,
             0,
             1000,
             600,
-            Fade(BLACK, 0.7f)
+            Fade(BLACK, 0.4f)
         );
 
         DrawText(
@@ -275,5 +291,37 @@ void DrawGame() {
             20,
             GRAY
         );
+    }
+}
+void CarregarRanking() {
+    FILE *arquivo = fopen("ranking.txt", "r");
+    if (arquivo == NULL) return;
+    for (int i = 0; i < RANKING; i++)
+        fscanf(arquivo, "%d", &ranking[i]);  
+    fclose(arquivo);  
+}
+
+void SalvarRanking() {
+    FILE *arquivo = fopen("ranking.txt", "w");
+    if (arquivo == NULL) return;
+    for (int i = 0; i < RANKING; i++)
+        fprintf(arquivo, "%d\n", ranking[i]);  
+    fclose(arquivo);  
+}
+
+void InserirNoRanking(int novoScore) {
+// verifica se o novo score já está no ranking
+ for (int i = 0; i < RANKING ; i++) {
+        if (ranking[i] == novoScore) return;  
+    }
+
+    for (int i = 0; i < RANKING; i++) {
+        if (novoScore > ranking[i]) {
+            for (int j = RANKING - 1; j > i; j--)
+                ranking[j] = ranking[j-1];
+            ranking[i] = novoScore;  
+            SalvarRanking();
+            return;
+        }
     }
 }
