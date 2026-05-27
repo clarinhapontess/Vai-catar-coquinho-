@@ -31,6 +31,7 @@ bool bonusDourado = false;
 float bonusTimer = 0;
 bool gameOver = false;
 float gameTimer = 0.0f;
+bool tutorial = true; // tutorial
 
 // Multiplicadores de velocidade
 float cocoSpeedMultiplier = 1.0f;
@@ -99,7 +100,14 @@ void UpdateGameProgression(float deltaTime) {
 }
 
 void UpdateGame(float deltaTime) {
-    UpdateMusicStream(musicaFundo);
+
+
+    if (tutorial) {
+        if (IsKeyPressed(KEY_ENTER)) tutorial = false;
+        return;  // não atualiza o jogo enquanto tutorial estiver ativo
+    }
+
+    UpdateMusicStream(musicaFundo); // ainda não sei se deixo antes ou depois do tutorial
 
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
         gameOver = false;
@@ -210,6 +218,11 @@ void DrawGame() {
     DrawText(TextFormat("Cocos: %i", score), 350, 568, 24, BLACK);
     DrawText(TextFormat("Vidas: %i", vidas), 550, 568, 24, BLACK);
 
+    if (tutorial) {
+        DrawTutorial();
+        return;
+    }
+
     if (bonusDourado) {
         DrawText(TextFormat("BONUS: %.0f", bonusTimer), 20, 100, 30, GOLD);
     }
@@ -266,4 +279,46 @@ void InserirNoRanking(int novoScore) {
             return;
         }
     }
+}
+
+void DrawTutorial() {
+    ClearBackground((Color){154, 244, 255, 255});
+
+    float tempoAtual = GetTime();
+    int waveOffset1 = sinf(tempoAtual * 1.5f) * 8;
+    DrawTexture(mar1Texture, 0, waveOffset1, WHITE);
+    int waveOffset2 = sinf((tempoAtual * 1.5f) + 1.0f) * 8;
+    DrawTexture(mar2Texture, 0, waveOffset2, WHITE);
+    DrawTexture(areiaTexture, 0, 0, WHITE);
+    DrawTexture(coqueirosTexture, 0, 0, WHITE);
+
+    // fundo branco semitransparente atras do texto
+    DrawRectangle(100, 40, 800, 520, Fade(WHITE, 0.75f));
+
+    DrawText("VAI CATAR COQUINHO",
+        1000/2 - MeasureText("VAI CATAR COQUINHO", 60)/2, 50, 60, DARKGREEN);
+
+    DrawText("Como jogar:",
+        1000/2 - MeasureText("Como jogar:", 30)/2, 140, 30, BLACK);
+
+    DrawText("Use as setas <- -> para mover o caranguejo",
+        1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 24)/2, 185, 24, BLACK);
+
+    DrawText("Tipos de itens:",
+        1000/2 - MeasureText("Tipos de itens:", 30)/2, 240, 30, BLACK);
+
+    DrawText("Coco verde: +1 ponto",
+        1000/2 - MeasureText("Coco verde: +1 ponto", 24)/2, 285, 24, DARKGREEN);
+
+    DrawText("Coco dourado: dobra os pontos por 20 segundos!",
+        1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 24)/2, 320, 24, GOLD);
+
+    DrawText("Agua de coco: +1 vida",
+        1000/2 - MeasureText("Agua de coco: +1 vida", 24)/2, 355, 24, BLUE);
+
+    DrawText("Lixo: -1 vida",
+        1000/2 - MeasureText("Lixo: -1 vida", 24)/2, 390, 24, RED);
+
+    DrawText("Pressione ENTER para comecar!",
+        1000/2 - MeasureText("Pressione ENTER para comecar!", 30)/2, 460, 30, DARKBLUE);
 }

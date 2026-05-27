@@ -31,11 +31,13 @@ extern float bonusTimer;
 extern float gameTimer;
 extern float cocoSpeedMultiplier;
 extern float playerSpeedMultiplier;
+extern bool tutorial; // tutorial 
 
 // Funções
 void InitGame();
 void UpdateGame(float deltaTime);
 void DrawGame();
 void UpdateGameProgression(float deltaTime);
+void DrawTutorial(); 
 
 #endif
