@@ -4,26 +4,30 @@
 #include "player.h"
 
 int main() {
-    InitWindow(1000, 600, "Vai Catar Coquinho"); //tamanho da tela//
-    SetTargetFPS(60); // resolução do jogo//
+    InitWindow(1000, 600, "Vai Catar Coquinho");
+    SetTargetFPS(60);
 
     InitGame();
 
-    // Loop principal do jogo //
+    // Loop principal do jogo
     while (!WindowShouldClose()) {
-
-        UpdateGame();
+        float deltaTime = GetFrameTime();
+        UpdateGame(deltaTime);
 
         BeginDrawing();
-
             DrawGame();
-
         EndDrawing();
     }
 
-    CloseWindow();
+    // --- CORREÇÃO AQUI: Descarregar o áudio ANTES de fechar a janela ---
     UnloadMusicStream(musicaFundo);
+    UnloadSound(ganhouPontos);
+    UnloadSound(perdeuPontos);
+    UnloadSound(morreu);
+    UnloadSound(maisVidas);
     CloseAudioDevice();
+    
+    CloseWindow(); // Sempre por último!
 
     return 0;
 }

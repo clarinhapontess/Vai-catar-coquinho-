@@ -12,7 +12,7 @@ typedef struct {
 
 // Variável global para o jogador //
 void InitPlayer();
-void UpdatePlayer();
+void UpdatePlayer(float deltaTime);
 void DrawPlayer();
 
 extern Player player; // -> Permite que outros arquivos usem: player.x, player.y, player.speed //
