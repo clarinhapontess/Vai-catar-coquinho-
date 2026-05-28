@@ -12,6 +12,7 @@ Texture2D areiaTexture;
 Texture2D mar1Texture;
 Texture2D mar2Texture;
 Texture2D coqueirosTexture;
+Texture2D coracaoTexture;
 
 // Música e efeitos sonoros //
 Music musicaFundo; 
@@ -27,7 +28,7 @@ bool bonusDourado = false;
 float bonusTimer = 0;
 bool gameOver = false;
 float gameTimer = 0;
-float playerSpeedMultiplier = 1.0f; // CRIADO: Definição oficial da variável global! //
+float playerSpeedMultiplier = 1.0f; // Definição oficial da variável global! //
 
 // adiciona cocos conforme dificuldade aumenta //
 int cocosAdicionados = 2;
@@ -55,6 +56,7 @@ void InitGame() {
     mar1Texture = LoadTexture("assets/backgrounds/mar1.png");
     mar2Texture = LoadTexture("assets/backgrounds/mar2.png");
     coqueirosTexture = LoadTexture("assets/backgrounds/coqueiros.png");
+    coracaoTexture = LoadTexture("assets/backgrounds/coracao.png");
 
     // Inicializa as variáveis do jogo //
     score = 0;
@@ -223,16 +225,50 @@ void DrawGame() {
     DrawCocos();
     DrawPlayer();
 
-    // Rodape transparente //
-    DrawRectangle(0, 560, 1000, 40, Fade(WHITE, 0.3f));
-
-    // Exibe pontuação e vidas //
-    DrawText(TextFormat("Cocos: %i", score), 150, 568, 24, BLACK);
-    DrawText(TextFormat("Vidas: %i", vidas), 550, 568, 24, BLACK);
-
-    // Bonus dourado ativo //
+    // Tela de bônus dourado //
     if (bonusDourado) {
-        DrawText(TextFormat("Bônus: %.0f", bonusTimer), 300, 568, 24, GOLD);
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(GOLD, 0.15f));
+    }
+
+    // Interface de pontuação e vidas //
+    DrawText(TextFormat("Cocos: %i", score), 862, 564, 26, BLACK); // Sombra de contraste
+    DrawText(TextFormat("Cocos: %i", score), 860, 562, 26, RAYWHITE);
+
+    DrawText("Vidas: ", 32, 564, 26, BLACK); // Sombra de contraste
+    DrawText("Vidas: ", 30, 562, 26, RAYWHITE);
+
+    // Escala para os corações //
+    float escalaCoracao = 0.6f;
+    for (int i = 0; i < vidas; i++) {
+        float espacamentoHorizontal = i * 45.0f;
+        Vector2 posicao = { 110.0f + espacamentoHorizontal, 555.0f };
+        
+        // Sombra do coração para destacar na areia
+        DrawTextureEx(coracaoTexture, (Vector2){ posicao.x + 2, posicao.y + 2 }, 0.0f, escalaCoracao, Fade(BLACK, 0.60f));
+        
+        // Coração principal
+        DrawTextureEx(
+            coracaoTexture,
+            posicao,
+            0.0f,
+            escalaCoracao,
+            WHITE
+        );
+    }
+
+    // --- BÔNUS DOURADO ATIVO ---
+    if (bonusDourado) {
+        char textoBonus[30];
+        sprintf(textoBonus, "BÔNUS DOURADO: %.0f s", bonusTimer);
+        
+        int larguraTexto = MeasureText(textoBonus, 28); 
+        int xCentralizado = (GetScreenWidth() / 2) - (larguraTexto / 2);
+
+        Color corBrilho = (sinf(GetTime() * 10) > 0) ? GOLD : YELLOW; 
+        
+        // Sombra do bônus centralizado
+        DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
+        DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
 
     // Tela de Game Over //
