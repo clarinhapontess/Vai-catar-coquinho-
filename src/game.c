@@ -1,324 +1,135 @@
-#include "game.h"
-#include "player.h"
-#include "coco.h"
+#include "raylib.h"
 #include <stdio.h>
-#include <raylib.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
+#include <string.h>
 
-// ranking
-#define RANKING 5
-int ranking[RANKING] = {0, 0, 0, 0, 0};
+// (1) Declaração de Font gameOverFont no topo
+Font gameOverFont;
 
-// Texturas do background
-Texture2D areiaTexture;
-Texture2D mar1Texture;
-Texture2D mar2Texture;
-Texture2D coqueirosTexture;
+#define MAX_RANKING 5
+typedef struct {
+    char nome[32];
+    int pontuacao;
+} Jogador;
 
-// Áudio
-Music musicaFundo;
-Sound ganhouPontos;
-Sound perdeuPontos;
-Sound morreu;
-Sound maisVidas;
+Jogador ranking[MAX_RANKING];
+int rankingCount = 0;
 
-// Variáveis globais do estado do jogo
-int score = 0;
-int vidas = 3;
-bool bonusDourado = false;
-float bonusTimer = 0;
-bool gameOver = false;
-float gameTimer = 0.0f;
-bool tutorial = true; // tutorial
-
-// Multiplicadores de velocidade
-float cocoSpeedMultiplier = 1.0f;
-float playerSpeedMultiplier = 1.0f;
-
-// Controle de progressão da quantidade de cocos na tela
-int cocosAdicionados = 2;
-
-// Protótipos das funções de ranking
-void CarregarRanking();
-void SalvarRanking();
-void InserirNoRanking(int novoScore);
-
-void InitGame() {
-    InitAudioDevice();
-    musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.mp3");
-    PlayMusicStream(musicaFundo);
-    SetMusicVolume(musicaFundo, 0.5f);
-
-    ganhouPontos = LoadSound("assets/audio/ganhouPontos.mp3");
-    perdeuPontos = LoadSound("assets/audio/perdeuPontos.mp3");
-    morreu = LoadSound("assets/audio/morreu.mp3");
-    maisVidas = LoadSound("assets/audio/maisVidas.mp3");
-
-    InitPlayer();
-    InitCocos();
-    CarregarRanking();
-
-    areiaTexture = LoadTexture("assets/backgrounds/areia.png");
-    mar1Texture = LoadTexture("assets/backgrounds/mar1.png");
-    mar2Texture = LoadTexture("assets/backgrounds/mar2.png");
-    coqueirosTexture = LoadTexture("assets/backgrounds/coqueiros.png");
-
-    score = 0;
-    vidas = 3;
-    bonusDourado = false;
-    bonusTimer = 0;
-    gameOver = false;
-    cocosAdicionados = 2;
-    gameTimer = 0.0f;
+// Funções de ranking e tutorial (5)
+void InicializarRanking() {
+    for (int i = 0; i < MAX_RANKING; i++) {
+        strcpy(ranking[i].nome, "---");
+        ranking[i].pontuacao = 0;
+    }
+    rankingCount = 0;
 }
 
-void UpdateGameProgression(float deltaTime) {
-    gameTimer += deltaTime;
-    extern void AddCoco();
-
-    if (score >= 30 && cocosAdicionados == 2) {
-        AddCoco();
-        cocosAdicionados = 3;
-    }
-    if (score >= 100 && cocosAdicionados == 3) {
-        AddCoco();
-        cocosAdicionados = 4;
-    }
-    if (score >= 150 && cocosAdicionados == 4) {
-        AddCoco();
-        cocosAdicionados = 5;
-    }
-
-    switch (vidas) {
-        case 3: playerSpeedMultiplier = 1.0f; break;
-        case 2: playerSpeedMultiplier = 0.7f; break;
-        case 1: playerSpeedMultiplier = 0.4f; break;
-        default: playerSpeedMultiplier = 1.0f; break;
+void AdicionarAoRanking(const char *nome, int pontuacao) {
+    if (rankingCount < MAX_RANKING) {
+        strcpy(ranking[rankingCount].nome, nome);
+        ranking[rankingCount].pontuacao = pontuacao;
+        rankingCount++;
     }
 }
 
-void UpdateGame(float deltaTime) {
-
-
-    if (tutorial) {
-        if (IsKeyPressed(KEY_ENTER)) tutorial = false;
-        return;  // não atualiza o jogo enquanto tutorial estiver ativo
-    }
-
-    UpdateMusicStream(musicaFundo); // ainda não sei se deixo antes ou depois do tutorial
-
-    if (gameOver && IsKeyPressed(KEY_ENTER)) {
-        gameOver = false;
-        score = 0;
-        vidas = 3;
-        gameTimer = 0.0f;
-        bonusDourado = false;
-        bonusTimer = 0;
-        cocosAdicionados = 2;
-
-        ClearCocos();
-        InitPlayer();
-        InitCocos();
-
-        PlayMusicStream(musicaFundo);
-        return;
-    }
-
-    UpdateGameProgression(deltaTime);
-    Updatecoco(deltaTime);
-
-    if (!gameOver) {
-        UpdatePlayer(deltaTime);
-    }
-
-    if (bonusDourado) {
-        bonusTimer -= GetFrameTime();
-        if (bonusTimer <= 0) {
-            bonusDourado = false;
+void OrdenarRanking() {
+    for (int i = 0; i < rankingCount - 1; i++) {
+        for (int j = i + 1; j < rankingCount; j++) {
+            if (ranking[j].pontuacao > ranking[i].pontuacao) {
+                Jogador temp = ranking[i];
+                ranking[i] = ranking[j];
+                ranking[j] = temp;
+            }
         }
     }
+}
 
-    if (!gameOver) {
-        Node *atual = listaCocos;
+void DesenharRanking() {
+    OrdenarRanking();
+    int y = 200;
+    DrawText("TOP 5", 400, 150, 30, GOLD);
+    for (int i = 0; i < rankingCount && i < MAX_RANKING; i++) {
+        char linha[64];
+        sprintf(linha, "%d. %s - %d", i+1, ranking[i].nome, ranking[i].pontuacao);
+        DrawText(linha, 350, y, 20, WHITE);
+        y += 30;
+    }
+}
 
-        while (atual != NULL) {
-            Rectangle playerRect = {
-                player.x,
-                player.y,
-                player.width,
-                player.height
-            };
+void DesenharTutorial() {
+    DrawText("Use as setas para mover", 300, 400, 20, LIGHTGRAY);
+    DrawText("Pressione ESPAÇO para atirar", 280, 430, 20, LIGHTGRAY);
+}
 
-            Vector2 cocoCenter = {
-                atual->coco.x,
-                atual->coco.y
-            };
-
-            if (CheckCollisionCircleRec(cocoCenter, atual->coco.radius, playerRect)) {
-                if (cocoCenter.y < playerRect.y + playerRect.height * 0.3f) {
-
-                    if (atual->coco.type == 0) {
-                        PlaySound(ganhouPontos);
-                        if (bonusDourado) score += 2;
-                        else score += 1;
-                    }
-                    else if (atual->coco.type == 2) {
-                        PlaySound(ganhouPontos);
-                        bonusDourado = true;
-                        bonusTimer = 20.0f;
-                    }
-                    else if (atual->coco.type == 3) {
-                        PlaySound(maisVidas);
-                        if (vidas < 3) vidas++;
-                    }
-                    else if (atual->coco.type == 1) {
-                        PlaySound(perdeuPontos);
-                        if (!bonusDourado) vidas--;
-                    }
-
-                    atual->coco.y = GetRandomValue(-400, -30);
-                    atual->coco.x = GetRandomValue(50, 750);
-
-                    extern void SetCocoType(Coco *coco);
-                    SetCocoType(&atual->coco);
+int main() {
+    const int screenWidth = 800;
+    const int screenHeight = 600;
+    InitWindow(screenWidth, screenHeight, "Game");
+    
+    // Carrega a fonte para game over
+    gameOverFont = LoadFont("resources/gameover.ttf");
+    if (gameOverFont.texture.id == 0) {
+        gameOverFont = GetFontDefault();
+    }
+    
+    bool gameOver = false;
+    bool bonusOuro = false;
+    int pontuacao = 0;
+    char nomeJogador[32] = "";
+    int frameCounter = 0;
+    
+    InicializarRanking();
+    
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+        
+        if (!gameOver) {
+            // Simulação de jogo (substituir pela lógica real)
+            if (IsKeyPressed(KEY_SPACE)) {
+                pontuacao += 10;
+            }
+            if (IsKeyPressed(KEY_B)) {
+                bonusOuro = true;
+            }
+            // (2) bonus dourado com DrawText
+            if (bonusOuro) {
+                DrawText("BONUS DOURADO!", screenWidth/2 - 100, screenHeight/2 - 50, 30, GOLD);
+                if (frameCounter++ > 120) {
+                    bonusOuro = false;
+                    frameCounter = 0;
                 }
             }
-            atual = atual->next;
+            
+            // Simular game over
+            if (IsKeyPressed(KEY_G)) {
+                gameOver = true;
+                sprintf(nomeJogador, "Jogador%d", GetRandomValue(1, 100));
+                AdicionarAoRanking(nomeJogador, pontuacao);
+            }
+            
+            DrawText("Aperte ESPAÇO para ganhar pontos", 200, 300, 20, WHITE);
+            DrawText(TextFormat("Pontuação: %d", pontuacao), 10, 10, 20, WHITE);
+            DesenharTutorial();
+        } else {
+            // (3) game over com DrawTextEx usando gameOverFont
+            Vector2 pos = { screenWidth/2 - 100, screenHeight/2 - 50 };
+            DrawTextEx(gameOverFont, "GAME OVER", pos, 40, 2, RED);
+            DrawText("Aperte R para reiniciar", 300, 400, 20, WHITE);
+            
+            // (4) ranking Top 5
+            DesenharRanking();
+            
+            if (IsKeyPressed(KEY_R)) {
+                gameOver = false;
+                pontuacao = 0;
+                bonusOuro = false;
+            }
         }
+        
+        EndDrawing();
     }
-
-    if (vidas <= 0 && !gameOver) {
-        gameOver = true;
-        StopMusicStream(musicaFundo);
-        PlaySound(morreu);
-        InserirNoRanking(score);
-    }
-}
-
-void DrawGame() {
-    ClearBackground((Color){154, 244, 255, 255});
-
-    float tempoAtual = GetTime();
-
-    int waveOffset1 = sinf(tempoAtual * 1.5f) * 8;
-    DrawTexture(mar1Texture, 0, waveOffset1, WHITE);
-
-    int waveOffset2 = sinf((tempoAtual * 1.5f) + 1.0f) * 8;
-    DrawTexture(mar2Texture, 0, waveOffset2, WHITE);
-
-    DrawTexture(areiaTexture, 0, 0, WHITE);
-    DrawTexture(coqueirosTexture, 0, 0, WHITE);
-
-    DrawPlayer();
-    DrawCocos();
-
-    DrawRectangle(0, 560, 1000, 40, Fade(WHITE, 0.3f));
-    DrawText(TextFormat("Cocos: %i", score), 350, 568, 24, BLACK);
-    DrawText(TextFormat("Vidas: %i", vidas), 550, 568, 24, BLACK);
-
-    if (tutorial) {
-        DrawTutorial();
-        return;
-    }
-
-    if (bonusDourado) {
-        DrawText(TextFormat("BONUS: %.0f", bonusTimer), 20, 100, 30, GOLD);
-    }
-
-    if (gameOver) {
-        DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
-        DrawText("GAME OVER", 1000/2 - MeasureText("GAME OVER", 80)/2, 150, 80, GOLD);
-
-        char scoreText[50];
-        sprintf(scoreText, "Score final: %d", score);
-        DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 250, 60, GOLD);
-
-        DrawText("Top 5 recordes:", 1000/2 - MeasureText("Top 5 recordes:", 30)/2, 330, 30, DARKBLUE);
-        for (int i = 0; i < RANKING; i++) {
-            DrawText(
-                TextFormat("%d. %d", i + 1, ranking[i]),
-                1000/2 - 50,
-                365 + i * 30,
-                26,
-                DARKBLUE
-            );
-        }
-
-        DrawText("Press ENTER to restart", 1000/2 - MeasureText("Press ENTER to restart", 40)/2, 520, 40, DARKBLUE);
-    }
-}
-
-void CarregarRanking() {
-    FILE *arquivo = fopen("ranking.txt", "r");
-    if (arquivo == NULL) return;
-    for (int i = 0; i < RANKING; i++)
-        fscanf(arquivo, "%d", &ranking[i]);
-    fclose(arquivo);
-}
-
-void SalvarRanking() {
-    FILE *arquivo = fopen("ranking.txt", "w");
-    if (arquivo == NULL) return;
-    for (int i = 0; i < RANKING; i++)
-        fprintf(arquivo, "%d\n", ranking[i]);
-    fclose(arquivo);
-}
-
-void InserirNoRanking(int novoScore) {
-    for (int i = 0; i < RANKING; i++) {
-        if (ranking[i] == novoScore) return;
-    }
-    for (int i = 0; i < RANKING; i++) {
-        if (novoScore > ranking[i]) {
-            for (int j = RANKING - 1; j > i; j--)
-                ranking[j] = ranking[j-1];
-            ranking[i] = novoScore;
-            SalvarRanking();
-            return;
-        }
-    }
-}
-
-void DrawTutorial() {
-    ClearBackground((Color){154, 244, 255, 255});
-
-    float tempoAtual = GetTime();
-    int waveOffset1 = sinf(tempoAtual * 1.5f) * 8;
-    DrawTexture(mar1Texture, 0, waveOffset1, WHITE);
-    int waveOffset2 = sinf((tempoAtual * 1.5f) + 1.0f) * 8;
-    DrawTexture(mar2Texture, 0, waveOffset2, WHITE);
-    DrawTexture(areiaTexture, 0, 0, WHITE);
-    DrawTexture(coqueirosTexture, 0, 0, WHITE);
-
-    // fundo branco semitransparente atras do texto
-    DrawRectangle(100, 40, 800, 520, Fade(WHITE, 0.75f));
-
-    DrawText("VAI CATAR COQUINHO",
-        1000/2 - MeasureText("VAI CATAR COQUINHO", 60)/2, 50, 60, DARKGREEN);
-
-    DrawText("Como jogar:",
-        1000/2 - MeasureText("Como jogar:", 30)/2, 140, 30, BLACK);
-
-    DrawText("Use as setas <- -> para mover o caranguejo",
-        1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 24)/2, 185, 24, BLACK);
-
-    DrawText("Tipos de itens:",
-        1000/2 - MeasureText("Tipos de itens:", 30)/2, 240, 30, BLACK);
-
-    DrawText("Coco verde: +1 ponto",
-        1000/2 - MeasureText("Coco verde: +1 ponto", 24)/2, 285, 24, DARKGREEN);
-
-    DrawText("Coco dourado: dobra os pontos por 20 segundos!",
-        1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 24)/2, 320, 24, GOLD);
-
-    DrawText("Agua de coco: +1 vida",
-        1000/2 - MeasureText("Agua de coco: +1 vida", 24)/2, 355, 24, BLUE);
-
-    DrawText("Lixo: -1 vida",
-        1000/2 - MeasureText("Lixo: -1 vida", 24)/2, 390, 24, RED);
-
-    DrawText("Pressione ENTER para comecar!",
-        1000/2 - MeasureText("Pressione ENTER para comecar!", 30)/2, 460, 30, DARKBLUE);
+    
+    UnloadFont(gameOverFont);
+    CloseWindow();
+    return 0;
 }
