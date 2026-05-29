@@ -15,13 +15,12 @@ extern Texture2D mar1Texture;
 extern Texture2D mar2Texture;
 extern Texture2D coqueirosTexture;
 
-// Música , efeitos e fontes
+// Música e efeitos
 extern Music musicaFundo;
 extern Sound ganhouPontos;
 extern Sound perdeuPontos;
 extern Sound morreu;
 extern Sound maisVidas;
-extern Font gameOverFont;
 
 // Variáveis do jogo
 extern int score;
