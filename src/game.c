@@ -8,8 +8,7 @@
 #include <time.h>
 
 // Ranking //
-#define RANKING 5
-int ranking[RANKING] = {0, 0, 0, 0, 0};
+int recorde = 0;
 
 // Texturas do background //
 Texture2D areiaTexture;
@@ -40,9 +39,7 @@ float cocoSpeedMultiplier = 1.0f;
 int cocosAdicionados = 2;
 
 // Protótipos das funções de ranking e interface //
-void CarregarRanking();
-void SalvarRanking();
-void InserirNoRanking(int novoScore);
+
 void DrawTutorial();
 
 // Inicialização do jogo //
@@ -50,19 +47,19 @@ void InitGame() {
     InitAudioDevice();
 
     // Música de fundo //
-    musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.mp3");
+    musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.wav");
     PlayMusicStream(musicaFundo);
     SetMusicVolume(musicaFundo, 0.5f);
 
     // Efeitos sonoros //
-    ganhouPontos = LoadSound("assets/audio/ganhouPontos.mp3");
-    perdeuPontos = LoadSound("assets/audio/perdeuPontos.mp3");
-    morreu = LoadSound("assets/audio/morreu.mp3"); 
-    maisVidas = LoadSound("assets/audio/maisVidas.mp3");
+    ganhouPontos = LoadSound("assets/audio/ganhouPontos.wav");
+    perdeuPontos = LoadSound("assets/audio/perdeuPontos.wav");
+    morreu = LoadSound("assets/audio/morreu.wav"); 
+    maisVidas = LoadSound("assets/audio/maisVidas.wav");
 
     InitPlayer(); 
     InitCocos(); 
-    CarregarRanking();
+    CarregarRecorde();
 
     // Carrega as texturas //
     areiaTexture = LoadTexture("assets/backgrounds/areia.png");
@@ -219,7 +216,10 @@ void UpdateGame(float deltaTime) {
         PlaySound(morreu);
         gameOver = true;
         StopMusicStream(musicaFundo);
-        InserirNoRanking(score); // Salva o score atual no ranking
+        if (score > recorde) {
+            recorde = score;
+            SalvarRecorde();
+        }
     }
 }
 
@@ -291,58 +291,31 @@ void DrawGame() {
 
     // Tela de Game Over com exibição do Top 5 do Ranking //
     if (gameOver) {
-        DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
-        DrawText("GAME OVER", 1000/2 - MeasureText("GAME OVER", 80)/2, 150, 80, GOLD);
-        
-        char scoreText[50];
-        sprintf(scoreText, "Score final: %d", score);
-        DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 250, 60, GOLD);
+    char scoreText[50];
+    sprintf(scoreText, "Score final: %d", score);
+    DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 250, 60, RED);
 
-        DrawText("Top 5 recordes:", 1000/2 - MeasureText("Top 5 recordes:", 30)/2, 330, 30, DARKBLUE);
-        for (int i = 0; i < RANKING; i++) {
-            DrawText(
-                TextFormat("%d. %d", i + 1, ranking[i]),
-                1000/2 - 50,
-                365 + i * 30,
-                26,
-                DARKBLUE
-            );
-        }
+    char recordeText[50];
+    sprintf(recordeText, "Recorde: %d", recorde);
+    DrawText(recordeText, 1000/2 - MeasureText(recordeText, 40)/2, 340, 40, DARKBLUE);
 
-        DrawText("Press ENTER to restart", 1000/2 - MeasureText("Press ENTER to restart", 40)/2, 520, 40, DARKBLUE);
-    }
+    DrawText("Pressione ENTER para reiniciar!", 1000/2 - MeasureText("Pressione ENTER para reiniciar!", 30)/2, 450, 30, DARKBLUE);
+}
 }
 
 // Funções de ranking //
-void CarregarRanking() {
-    FILE *arquivo = fopen("ranking.txt", "r");
+void CarregarRecorde() {
+    FILE *arquivo = fopen("recorde.txt", "r");
     if (arquivo == NULL) return;
-    for (int i = 0; i < RANKING; i++)
-        fscanf(arquivo, "%d", &ranking[i]);
+    fscanf(arquivo, "%d", &recorde);
     fclose(arquivo);
 }
 
-void SalvarRanking() {
-    FILE *arquivo = fopen("ranking.txt", "w");
+void SalvarRecorde() {
+    FILE *arquivo = fopen("recorde.txt", "w");
     if (arquivo == NULL) return;
-    for (int i = 0; i < RANKING; i++)
-        fprintf(arquivo, "%d\n", ranking[i]);
+    fprintf(arquivo, "%d\n", recorde);
     fclose(arquivo);
-}
-
-void InserirNoRanking(int novoScore) {
-    for (int i = 0; i < RANKING; i++) {
-        if (ranking[i] == novoScore) return;
-    }
-    for (int i = 0; i < RANKING; i++) {
-        if (novoScore > ranking[i]) {
-            for (int j = RANKING - 1; j > i; j--)
-                ranking[j] = ranking[j-1];
-            ranking[i] = novoScore;
-            SalvarRanking();
-            return;
-        }
-    }
 }
 
 // Desenho do tutorial //
