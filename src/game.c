@@ -21,6 +21,10 @@ Sound perdeuPontos;
 Sound morreu;
 Sound maisVidas;
 
+// ranking //
+#define RANKING 5
+int ranking[RANKING] = {0, 0, 0, 0, 0};
+
 // Variáveis globais do estado do jogo //
 int score = 0;
 int vidas = 3;
@@ -28,10 +32,17 @@ bool bonusDourado = false;
 float bonusTimer = 0;
 bool gameOver = false;
 float gameTimer = 0;
+bool tutorial = true;
 float playerSpeedMultiplier = 1.0f; // Definição oficial da variável global! //
 
 // adiciona cocos conforme dificuldade aumenta //
 int cocosAdicionados = 2;
+
+// Protótipos das funções de ranking //
+void CarregarRanking();
+void SalvarRanking();
+void InserirNoRanking(int novoScore);
+void DrawTutorial();
 
 // inicializa o jogo //
 void InitGame() {
@@ -101,6 +112,12 @@ void UpdateGameProgression(float deltaTime) {
 
 // Atualiza o estado do jogo //
 void UpdateGame (float deltaTime) {
+    // Se o tutorial estiver ativo, não atualiza o jogo //
+    if (tutorial) {
+        if (IsKeyPressed(KEY_ENTER)) tutorial = false;
+        return;  // não atualiza o jogo enquanto tutorial estiver ativo
+    }
+
     UpdateMusicStream(musicaFundo);
 
     // RESTART //
@@ -207,6 +224,13 @@ void UpdateGame (float deltaTime) {
 
 // Desenha o jogo na tela //
 void DrawGame() {
+
+    // Tela de tutorial //
+    if (tutorial) {
+        DrawTutorial();
+        return;
+    }
+
     ClearBackground((Color){154, 244, 255, 255});
 
     // Mar //
@@ -256,7 +280,7 @@ void DrawGame() {
         );
     }
 
-    // --- BÔNUS DOURADO ATIVO ---
+    // Bônus dourado //
     if (bonusDourado) {
         char textoBonus[30];
         sprintf(textoBonus, "BÔNUS DOURADO: %.0f s", bonusTimer);
@@ -281,4 +305,81 @@ void DrawGame() {
         DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 300, 60, GOLD);
         DrawText("Press ENTER to restart", 1000/2 - MeasureText("Press ENTER to restart", 40)/2, 450, 40, DARKBLUE);
     }
+}
+
+// Carrega o ranking do arquivo //
+void CarregarRanking() {
+    FILE *arquivo = fopen("ranking.txt", "r");
+    if (arquivo == NULL) return;
+    for (int i = 0; i < RANKING; i++)
+        fscanf(arquivo, "%d", &ranking[i]);
+    fclose(arquivo);
+}
+
+// Salva o ranking no arquivo //
+void SalvarRanking() {
+    FILE *arquivo = fopen("ranking.txt", "w");
+    if (arquivo == NULL) return;
+    for (int i = 0; i < RANKING; i++)
+        fprintf(arquivo, "%d\n", ranking[i]);
+    fclose(arquivo);
+}
+
+// Insere um novo score no ranking, mantendo a ordem //
+void InserirNoRanking(int novoScore) {
+    for (int i = 0; i < RANKING; i++) {
+        if (ranking[i] == novoScore) return;
+    }
+    for (int i = 0; i < RANKING; i++) {
+        if (novoScore > ranking[i]) {
+            for (int j = RANKING - 1; j > i; j--)
+                ranking[j] = ranking[j-1];
+            ranking[i] = novoScore;
+            SalvarRanking();
+            return;
+        }
+    }
+}
+
+// Desenha a tela de tutorial //
+void DrawTutorial() {
+    ClearBackground((Color){154, 244, 255, 255});
+
+    float tempoAtual = GetTime();
+    int waveOffset1 = sinf(tempoAtual * 1.5f) * 8;
+    DrawTexture(mar1Texture, 0, waveOffset1, WHITE);
+    int waveOffset2 = sinf((tempoAtual * 1.5f) + 1.0f) * 8;
+    DrawTexture(mar2Texture, 0, waveOffset2, WHITE);
+    DrawTexture(areiaTexture, 0, 0, WHITE);
+    DrawTexture(coqueirosTexture, 0, 0, WHITE);
+
+    // fundo branco semitransparente atras do texto
+    DrawRectangle(100, 40, 800, 520, Fade(WHITE, 0.75f));
+
+    DrawText("VAI CATAR COQUINHO",
+        1000/2 - MeasureText("VAI CATAR COQUINHO", 60)/2, 50, 60, DARKGREEN);
+
+    DrawText("Como jogar:",
+        1000/2 - MeasureText("Como jogar:", 30)/2, 140, 30, BLACK);
+
+    DrawText("Use as setas <- -> para mover o caranguejo",
+        1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 24)/2, 185, 24, BLACK);
+
+    DrawText("Tipos de itens:",
+        1000/2 - MeasureText("Tipos de itens:", 30)/2, 240, 30, BLACK);
+
+    DrawText("Coco verde: +1 ponto",
+        1000/2 - MeasureText("Coco verde: +1 ponto", 24)/2, 285, 24, DARKGREEN);
+
+    DrawText("Coco dourado: dobra os pontos por 20 segundos!",
+        1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 24)/2, 320, 24, GOLD);
+
+    DrawText("Agua de coco: +1 vida",
+        1000/2 - MeasureText("Agua de coco: +1 vida", 24)/2, 355, 24, BLUE);
+
+    DrawText("Lixo: -1 vida",
+        1000/2 - MeasureText("Lixo: -1 vida", 24)/2, 390, 24, RED);
+
+    DrawText("Pressione ENTER para comecar!",
+        1000/2 - MeasureText("Pressione ENTER para comecar!", 30)/2, 460, 30, DARKBLUE);
 }
