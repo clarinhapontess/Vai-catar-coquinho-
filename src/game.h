@@ -1,14 +1,20 @@
 #ifndef GAME_H
 #define GAME_H
+
 #include "stdbool.h"
 #include "raylib.h"
+
 #define RANKING 5
+
+// Ranking //
+extern int ranking[RANKING];
 
 // Texturas //
 extern Texture2D areiaTexture;
 extern Texture2D mar1Texture;
 extern Texture2D mar2Texture;
 extern Texture2D coqueirosTexture;
+extern Texture2D coracaoTexture; // Adicionado para conversar com o game.c novo //
 
 // Música e efeitos //
 extern Music musicaFundo;
@@ -26,13 +32,16 @@ extern float bonusTimer;
 extern float gameTimer;
 extern float cocoSpeedMultiplier;
 extern float playerSpeedMultiplier;
-extern int ranking[RANKING];
+extern bool tutorial; 
 
 // Funções //
 void InitGame();
 void UpdateGame(float deltaTime);
 void DrawGame();
 void UpdateGameProgression(float deltaTime);
+void DrawTutorial(); 
+
+// Funções de Ranking //
 void CarregarRanking();
 void SalvarRanking();
 void InserirNoRanking(int novoScore);

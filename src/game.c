@@ -7,6 +7,10 @@
 #include <math.h>
 #include <time.h>
 
+// Ranking //
+#define RANKING 5
+int ranking[RANKING] = {0, 0, 0, 0, 0};
+
 // Texturas do background //
 Texture2D areiaTexture;
 Texture2D mar1Texture;
@@ -21,10 +25,6 @@ Sound perdeuPontos;
 Sound morreu;
 Sound maisVidas;
 
-// ranking //
-#define RANKING 5
-int ranking[RANKING] = {0, 0, 0, 0, 0};
-
 // Variáveis globais do estado do jogo //
 int score = 0;
 int vidas = 3;
@@ -33,36 +33,37 @@ float bonusTimer = 0;
 bool gameOver = false;
 float gameTimer = 0;
 bool tutorial = true;
-float playerSpeedMultiplier = 1.0f; // Definição oficial da variável global! //
+float playerSpeedMultiplier = 1.0f; 
 
-// adiciona cocos conforme dificuldade aumenta //
+// Adiciona cocos conforme dificuldade aumenta //
 int cocosAdicionados = 2;
 
-// Protótipos das funções de ranking //
+// Protótipos das funções de ranking e interface //
 void CarregarRanking();
 void SalvarRanking();
 void InserirNoRanking(int novoScore);
 void DrawTutorial();
 
-// inicializa o jogo //
+// Inicialização do jogo //
 void InitGame() {
     InitAudioDevice();
 
-    // MUSICA DE FUNDO //
+    // Música de fundo //
     musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.mp3");
     PlayMusicStream(musicaFundo);
     SetMusicVolume(musicaFundo, 0.5f);
 
-    // EFEITOS SONOROS //
+    // Efeitos sonoros //
     ganhouPontos = LoadSound("assets/audio/ganhouPontos.mp3");
     perdeuPontos = LoadSound("assets/audio/perdeuPontos.mp3");
-    morreu = LoadSound("assets/audio/morreu.mp3"); // ALTERADO: minúsculo //
+    morreu = LoadSound("assets/audio/morreu.mp3"); 
     maisVidas = LoadSound("assets/audio/maisVidas.mp3");
 
-    InitPlayer(); // Inicializa o jogador //
-    InitCocos(); // Inicializa os cocos //
+    InitPlayer(); 
+    InitCocos(); 
+    CarregarRanking();
 
-    // CARREGA AS TEXTURAS DO BACKGROUND //
+    // Carrega as texturas //
     areiaTexture = LoadTexture("assets/backgrounds/areia.png");
     mar1Texture = LoadTexture("assets/backgrounds/mar1.png");
     mar2Texture = LoadTexture("assets/backgrounds/mar2.png");
@@ -76,14 +77,16 @@ void InitGame() {
     bonusTimer = 0;
     gameOver = false;
     gameTimer = 0;
-    playerSpeedMultiplier = 1.0f; // Reseta a velocidade ao iniciar //
+    cocosAdicionados = 2;
+    playerSpeedMultiplier = 1.0f; 
 }
 
-// Dificuldade progressiva //
+// Atualização da dificuldade do jogo //
 void UpdateGameProgression(float deltaTime) {
     gameTimer += deltaTime;
-    extern void AddCoco(); // funcao em coco.c //
+    extern void AddCoco(); 
 
+    // Sistema de progressão da branch danda //
     if (score >= 30 && cocosAdicionados == 2) {
         AddCoco();
         cocosAdicionados = 3;
@@ -99,28 +102,27 @@ void UpdateGameProgression(float deltaTime) {
     // Player fica mais lento ao perder vidas //
     switch (vidas) {
         case 2:
-            playerSpeedMultiplier = 0.6f; // Velocidade reduzida //
+            playerSpeedMultiplier = 0.6f; 
             break;
         case 1:
-            playerSpeedMultiplier = 0.4f; // Velocidade reduzida //
+            playerSpeedMultiplier = 0.4f; 
             break;
         default:
-            playerSpeedMultiplier = 1.0f; // Velocidade normal //
+            playerSpeedMultiplier = 1.0f; 
             break;
     }
 }
 
-// Atualiza o estado do jogo //
-void UpdateGame (float deltaTime) {
-    // Se o tutorial estiver ativo, não atualiza o jogo //
+// Atualização do jogo //
+void UpdateGame(float deltaTime) {
     if (tutorial) {
         if (IsKeyPressed(KEY_ENTER)) tutorial = false;
-        return;  // não atualiza o jogo enquanto tutorial estiver ativo
+        return;  
     }
 
     UpdateMusicStream(musicaFundo);
 
-    // RESTART //
+    // Restart //
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
         gameOver = false;
         score = 0;
@@ -171,32 +173,29 @@ void UpdateGame (float deltaTime) {
             };
 
             if (CheckCollisionCircleRec(cocoCenter, atual->coco.radius, playerRect)) {
-                // colisão apenas por cima //
+                // Colisão apenas por cima //
                 if (cocoCenter.y < playerRect.y + playerRect.height * 0.3f) {
                     
-                    // COCO NORMAL //
+                    // Coco normal //
                     if (atual->coco.type == 0) {
                         PlaySound(ganhouPontos);
-                        if (bonusDourado) {
-                            score += 2;
-                        } else {
-                            score += 1;
-                        }
+                        if (bonusDourado) score += 2;
+                        else score += 1;
                     }
-                    // LIXO //
+                    // Lixo //
                     else if (atual->coco.type == 1) {
                         PlaySound(perdeuPontos);
                         score -= 1;
                         if (score < 0) score = 0;
-                        vidas--; 
+                        if (!bonusDourado) vidas--; 
                     }
-                    // COCO DOURADO //
+                    // Coco dourado //
                     else if (atual->coco.type == 2) {
                         PlaySound(ganhouPontos);
                         bonusDourado = true;
                         bonusTimer = 20.0f; 
                     }
-                    // AGUA DE COCO //
+                    // Água de coco //
                     else if (atual->coco.type == 3) {
                         PlaySound(maisVidas);
                         if (vidas < 3) vidas++;
@@ -219,12 +218,12 @@ void UpdateGame (float deltaTime) {
         PlaySound(morreu);
         gameOver = true;
         StopMusicStream(musicaFundo);
+        InserirNoRanking(score); // Salva o score atual no ranking
     }
 }
 
-// Desenha o jogo na tela //
+// Desenho do jogo //
 void DrawGame() {
-
     // Tela de tutorial //
     if (tutorial) {
         DrawTutorial();
@@ -249,38 +248,32 @@ void DrawGame() {
     DrawCocos();
     DrawPlayer();
 
-    // Tela de bônus dourado //
+    // Tela de bônus dourado (Overlay translúcido) //
     if (bonusDourado) {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(GOLD, 0.15f));
     }
 
-    // Interface de pontuação e vidas //
-    DrawText(TextFormat("Cocos: %i", score), 862, 564, 26, BLACK); // Sombra de contraste
-    DrawText(TextFormat("Cocos: %i", score), 860, 562, 26, RAYWHITE);
+    // --- INTERFACE DE PONTUAÇÃO E VIDAS (Fontes aumentadas para 34 e sem barra) --- //
+    DrawText(TextFormat("Cocos: %i", score), 862, 559, 34, BLACK); // Sombra
+    DrawText(TextFormat("Cocos: %i", score), 860, 557, 34, RAYWHITE);
 
-    DrawText("Vidas: ", 32, 564, 26, BLACK); // Sombra de contraste
-    DrawText("Vidas: ", 30, 562, 26, RAYWHITE);
+    DrawText("Vidas: ", 32, 559, 34, BLACK); // Sombra
+    DrawText("Vidas: ", 30, 557, 34, RAYWHITE);
 
-    // Escala para os corações //
+    // Escala e posicionamento dos corações //
     float escalaCoracao = 0.6f;
     for (int i = 0; i < vidas; i++) {
         float espacamentoHorizontal = i * 45.0f;
-        Vector2 posicao = { 110.0f + espacamentoHorizontal, 555.0f };
+        Vector2 posicao = { 140.0f + espacamentoHorizontal, 555.0f }; // Ajustado para X = 140 para não sobrepor o texto maior
         
         // Sombra do coração para destacar na areia
         DrawTextureEx(coracaoTexture, (Vector2){ posicao.x + 2, posicao.y + 2 }, 0.0f, escalaCoracao, Fade(BLACK, 0.60f));
         
         // Coração principal
-        DrawTextureEx(
-            coracaoTexture,
-            posicao,
-            0.0f,
-            escalaCoracao,
-            WHITE
-        );
+        DrawTextureEx(coracaoTexture, posicao, 0.0f, escalaCoracao, WHITE);
     }
 
-    // Bônus dourado //
+    // Bônus dourado centralizado //
     if (bonusDourado) {
         char textoBonus[30];
         sprintf(textoBonus, "BÔNUS DOURADO: %.0f s", bonusTimer);
@@ -290,24 +283,36 @@ void DrawGame() {
 
         Color corBrilho = (sinf(GetTime() * 10) > 0) ? GOLD : YELLOW; 
         
-        // Sombra do bônus centralizado
+        // Sombra e texto principal
         DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
 
-    // Tela de Game Over //
+    // Tela de Game Over com exibição do Top 5 do Ranking //
     if (gameOver) {
         DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
         DrawText("GAME OVER", 1000/2 - MeasureText("GAME OVER", 80)/2, 150, 80, GOLD);
         
         char scoreText[50];
         sprintf(scoreText, "Score final: %d", score);
-        DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 300, 60, GOLD);
-        DrawText("Press ENTER to restart", 1000/2 - MeasureText("Press ENTER to restart", 40)/2, 450, 40, DARKBLUE);
+        DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 250, 60, GOLD);
+
+        DrawText("Top 5 recordes:", 1000/2 - MeasureText("Top 5 recordes:", 30)/2, 330, 30, DARKBLUE);
+        for (int i = 0; i < RANKING; i++) {
+            DrawText(
+                TextFormat("%d. %d", i + 1, ranking[i]),
+                1000/2 - 50,
+                365 + i * 30,
+                26,
+                DARKBLUE
+            );
+        }
+
+        DrawText("Press ENTER to restart", 1000/2 - MeasureText("Press ENTER to restart", 40)/2, 520, 40, DARKBLUE);
     }
 }
 
-// Carrega o ranking do arquivo //
+// Funções de ranking //
 void CarregarRanking() {
     FILE *arquivo = fopen("ranking.txt", "r");
     if (arquivo == NULL) return;
@@ -316,7 +321,6 @@ void CarregarRanking() {
     fclose(arquivo);
 }
 
-// Salva o ranking no arquivo //
 void SalvarRanking() {
     FILE *arquivo = fopen("ranking.txt", "w");
     if (arquivo == NULL) return;
@@ -325,7 +329,6 @@ void SalvarRanking() {
     fclose(arquivo);
 }
 
-// Insere um novo score no ranking, mantendo a ordem //
 void InserirNoRanking(int novoScore) {
     for (int i = 0; i < RANKING; i++) {
         if (ranking[i] == novoScore) return;
@@ -341,7 +344,7 @@ void InserirNoRanking(int novoScore) {
     }
 }
 
-// Desenha a tela de tutorial //
+// Desenho do tutorial //
 void DrawTutorial() {
     ClearBackground((Color){154, 244, 255, 255});
 
@@ -353,33 +356,16 @@ void DrawTutorial() {
     DrawTexture(areiaTexture, 0, 0, WHITE);
     DrawTexture(coqueirosTexture, 0, 0, WHITE);
 
-    // fundo branco semitransparente atras do texto
+    // Fundo branco semitransparente atrás do texto //
     DrawRectangle(100, 40, 800, 520, Fade(WHITE, 0.75f));
 
-    DrawText("VAI CATAR COQUINHO",
-        1000/2 - MeasureText("VAI CATAR COQUINHO", 60)/2, 50, 60, DARKGREEN);
-
-    DrawText("Como jogar:",
-        1000/2 - MeasureText("Como jogar:", 30)/2, 140, 30, BLACK);
-
-    DrawText("Use as setas <- -> para mover o caranguejo",
-        1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 24)/2, 185, 24, BLACK);
-
-    DrawText("Tipos de itens:",
-        1000/2 - MeasureText("Tipos de itens:", 30)/2, 240, 30, BLACK);
-
-    DrawText("Coco verde: +1 ponto",
-        1000/2 - MeasureText("Coco verde: +1 ponto", 24)/2, 285, 24, DARKGREEN);
-
-    DrawText("Coco dourado: dobra os pontos por 20 segundos!",
-        1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 24)/2, 320, 24, GOLD);
-
-    DrawText("Agua de coco: +1 vida",
-        1000/2 - MeasureText("Agua de coco: +1 vida", 24)/2, 355, 24, BLUE);
-
-    DrawText("Lixo: -1 vida",
-        1000/2 - MeasureText("Lixo: -1 vida", 24)/2, 390, 24, RED);
-
-    DrawText("Pressione ENTER para comecar!",
-        1000/2 - MeasureText("Pressione ENTER para comecar!", 30)/2, 460, 30, DARKBLUE);
+    DrawText("VAI CATAR COQUINHO", 1000/2 - MeasureText("VAI CATAR COQUINHO", 60)/2, 50, 60, DARKGREEN);
+    DrawText("Como jogar:", 1000/2 - MeasureText("Como jogar:", 30)/2, 140, 30, BLACK);
+    DrawText("Use as setas <- -> para mover o caranguejo", 1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 24)/2, 185, 24, BLACK);
+    DrawText("Tipos de itens:", 1000/2 - MeasureText("Tipos de itens:", 30)/2, 240, 30, BLACK);
+    DrawText("Coco verde: +1 ponto", 1000/2 - MeasureText("Coco verde: +1 ponto", 24)/2, 285, 24, DARKGREEN);
+    DrawText("Coco dourado: dobra os pontos por 20 segundos!", 1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 24)/2, 320, 24, GOLD);
+    DrawText("Agua de coco: +1 vida", 1000/2 - MeasureText("Agua de coco: +1 vida", 24)/2, 355, 24, BLUE);
+    DrawText("Lixo: -1 vida", 1000/2 - MeasureText("Lixo: -1 vida", 24)/2, 390, 24, RED);
+    DrawText("Pressione ENTER para comecar!", 1000/2 - MeasureText("Pressione ENTER para comecar!", 30)/2, 460, 30, DARKBLUE);
 }
