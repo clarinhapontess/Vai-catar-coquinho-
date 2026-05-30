@@ -333,44 +333,82 @@ void DrawGame() {
         DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
-    if(gameOver){ // Dimensões do retângulo semitransparente
-    const int rectWidth = 600;
-    const int rectHeight = 350;
-    const int rectX = (1000 - rectWidth) / 2;      // Centralizado horizontalmente
-    const int rectY = (600 - rectHeight) / 2;      // Centralizado verticalmente
-    const int padding = 30;                         // Espaço interno
+    if (gameOver) {
+    // Desenhar fundo semitransparente
+    DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
 
-    // Desenhar retângulo semitransparente
-    DrawRectangle(rectX, rectY, rectWidth, rectHeight, Fade(WHITE, 0.5f));
+    // ✅ Tamanhos de fonte proporcionais
+    float gameOverFontSize = 120.0f;           // Base
+    float scoreFontSize = 84.0f;               // 30% menor (120 * 0.7)
+    float recordeFontSize = 60.0f;             // 50% menor (120 * 0.5)
+    float instructionFontSize = 35.0f;         // Instrução
 
-    // Posição inicial dos textos
-    int textY = rectY + padding;
+    // ✅ Spacing com borda 120%
+    float gameOverSpacing = 1.2f;
+    float scoreSpacing = 1.0f;
+    float recordeSpacing = 0.9f;
+    float instructionSpacing = 0.75f;
 
-    // Título: GAME OVER
-    const char *title = "GAME OVER";
-    int titleWidth = MeasureText(title, 60);
-    DrawText(title, rectX + (rectWidth - titleWidth) / 2, textY, 60, GOLD);
-    textY += 80;
-
-    // Score final
+    // Textos
+    const char *gameOverText = "GAME OVER";
     char scoreText[50];
     sprintf(scoreText, "Score final: %d", score);
-    int scoreWidth = MeasureText(scoreText, 40);
-    DrawText(scoreText, rectX + (rectWidth - scoreWidth) / 2, textY, 40, RED);
-    textY += 60;
-
-    // Recorde
     char recordeText[50];
     sprintf(recordeText, "Recorde: %d", recorde);
-    int recordeWidth = MeasureText(recordeText, 40);
-    DrawText(recordeText, rectX + (rectWidth - recordeWidth) / 2, textY, 40, GOLD);
-    textY += 60;
+    const char *instructionText = "Pressione ENTER para reiniciar!";
 
-    // Instrução de reinício
-    const char *restartText = "Pressione ENTER para reiniciar!";
-    int restartWidth = MeasureText(restartText, 30);
-    DrawText(restartText, rectX + (rectWidth - restartWidth) / 2, textY, 30, DARKBLUE);}
- 
+    // ✅ Medir tamanhos com DrawTextEx
+    Vector2 gameOverSize = MeasureTextEx(GasoekOne, gameOverText, gameOverFontSize, gameOverSpacing);
+    Vector2 scoreSize = MeasureTextEx(GasoekOne, scoreText, scoreFontSize, scoreSpacing);
+    Vector2 recordeSize = MeasureTextEx(GasoekOne, recordeText, recordeFontSize, recordeSpacing);
+    Vector2 instructionSize = MeasureTextEx(GasoekOne, instructionText, instructionFontSize, instructionSpacing);
+
+    // ✅ Posições centralizadas
+    Vector2 gameOverPos = { (1000 - gameOverSize.x) / 2.0f, 60 };
+    Vector2 scorePos = { (1000 - scoreSize.x) / 2.0f, 200 };
+    Vector2 recordePos = { (1000 - recordeSize.x) / 2.0f, 310 };
+    Vector2 instructionPos = { (1000 - instructionSize.x) / 2.0f, 430 };
+
+    // ✅ Desenhar GAME OVER com borda (GOLD)
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) {
+                DrawTextEx(GasoekOne, gameOverText, (Vector2){gameOverPos.x + dx, gameOverPos.y + dy}, gameOverFontSize, gameOverSpacing, BLACK);
+            }
+        }
+    }
+    DrawTextEx(GasoekOne, gameOverText, gameOverPos, gameOverFontSize, gameOverSpacing, GOLD);
+
+    // ✅ Desenhar Score com borda (WHITE)
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) {
+                DrawTextEx(GasoekOne, scoreText, (Vector2){scorePos.x + dx, scorePos.y + dy}, scoreFontSize, scoreSpacing, BLACK);
+            }
+        }
+    }
+    DrawTextEx(GasoekOne, scoreText, scorePos, scoreFontSize, scoreSpacing, WHITE);
+
+    // ✅ Desenhar Recorde com borda (RED)
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) {
+                DrawTextEx(GasoekOne, recordeText, (Vector2){recordePos.x + dx, recordePos.y + dy}, recordeFontSize, recordeSpacing, BLACK);
+            }
+        }
+    }
+    DrawTextEx(GasoekOne, recordeText, recordePos, recordeFontSize, recordeSpacing, RED);
+
+    // ✅ Desenhar Instrução com borda (WHITE)
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) {
+                DrawTextEx(GasoekOne, instructionText, (Vector2){instructionPos.x + dx, instructionPos.y + dy}, instructionFontSize, instructionSpacing, BLACK);
+            }
+        }
+    }
+    DrawTextEx(GasoekOne, instructionText, instructionPos, instructionFontSize, instructionSpacing, WHITE);
+}
 }
 
 

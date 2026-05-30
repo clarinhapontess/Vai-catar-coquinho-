@@ -35,6 +35,7 @@ extern bool isPaused;
 extern bool tutorial; 
 extern bool naHistoria;
 extern bool isPaused;
+extern Font GasoekOne;
 // Funções //
 void InitGame();
 void UpdateGame(float deltaTime);
