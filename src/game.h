@@ -24,8 +24,7 @@ extern Sound morreu;
 extern Sound maisVidas;
 
 // Variáveis do jogo //
-extern int score;
-extern int vidas;
+extern int recorde;
 extern bool bonusDourado;
 extern bool gameOver;
 extern float bonusTimer;
@@ -40,6 +39,8 @@ void UpdateGame(float deltaTime);
 void DrawGame();
 void UpdateGameProgression(float deltaTime);
 void DrawTutorial(); 
+void CarregarRecorde();
+void SalvarRecorde();
 
 // Funções de Ranking //
 void CarregarRanking();

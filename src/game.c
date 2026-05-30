@@ -9,8 +9,7 @@
 #include "screens.h"
 
 // Ranking //
-#define RANKING 5
-int ranking[RANKING] = {0, 0, 0, 0, 0};
+int recorde = 0;
 
 // Texturas do background //
 Texture2D areiaTexture;
@@ -42,9 +41,7 @@ extern bool naHistoria;
 int cocosAdicionados = 2;
 
 // Protótipos das funções de ranking e interface //
-void CarregarRanking();
-void SalvarRanking();
-void InserirNoRanking(int novoScore);
+
 void DrawTutorial();
 
 // Inicialização do jogo //
@@ -52,20 +49,20 @@ void InitGame() {
     InitAudioDevice();
 
     // Música de fundo //
-    musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.mp3");
+    musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.wav");
     PlayMusicStream(musicaFundo);
     SetMusicVolume(musicaFundo, 0.5f);
 
     // Efeitos sonoros //
-    ganhouPontos = LoadSound("assets/audio/ganhouPontos.mp3");
-    perdeuPontos = LoadSound("assets/audio/perdeuPontos.mp3");
-    morreu = LoadSound("assets/audio/morreu.mp3"); 
-    maisVidas = LoadSound("assets/audio/maisVidas.mp3");
+    ganhouPontos = LoadSound("assets/audio/ganhouPontos.wav");
+    perdeuPontos = LoadSound("assets/audio/perdeuPontos.wav");
+    morreu = LoadSound("assets/audio/morreu.wav"); 
+    maisVidas = LoadSound("assets/audio/maisVidas.wav");
 
     InitScreens();
     InitPlayer(); 
     InitCocos(); 
-    CarregarRanking();
+    CarregarRecorde();
 
     // Carrega as texturas //
     areiaTexture = LoadTexture("assets/backgrounds/areia.png");
@@ -227,7 +224,10 @@ void UpdateGame(float deltaTime) {
         PlaySound(morreu);
         gameOver = true;
         StopMusicStream(musicaFundo);
-        InserirNoRanking(score); // Salva o score atual no ranking
+        if (score > recorde) {
+            recorde = score;
+            SalvarRecorde();
+        }
     }
 }
 
@@ -303,61 +303,60 @@ void DrawGame() {
         DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
+    if(gameOver){ // Dimensões do retângulo semitransparente
+    const int rectWidth = 600;
+    const int rectHeight = 350;
+    const int rectX = (1000 - rectWidth) / 2;      // Centralizado horizontalmente
+    const int rectY = (600 - rectHeight) / 2;      // Centralizado verticalmente
+    const int padding = 30;                         // Espaço interno
 
-    // Tela de Game Over com exibição do Top 5 do Ranking //
-    if (gameOver) {
-        DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
-        DrawText("GAME OVER", 1000/2 - MeasureText("GAME OVER", 80)/2, 150, 80, GOLD);
-        
-        char scoreText[50];
-        sprintf(scoreText, "Score final: %d", score);
-        DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 250, 60, GOLD);
+    // Desenhar retângulo semitransparente
+    DrawRectangle(rectX, rectY, rectWidth, rectHeight, Fade(WHITE, 0.5f));
 
-        DrawText("Top 5 recordes:", 1000/2 - MeasureText("Top 5 recordes:", 30)/2, 330, 30, DARKBLUE);
-        for (int i = 0; i < RANKING; i++) {
-            DrawText(
-                TextFormat("%d. %d", i + 1, ranking[i]),
-                1000/2 - 50,
-                365 + i * 30,
-                26,
-                DARKBLUE
-            );
-        }
+    // Posição inicial dos textos
+    int textY = rectY + padding;
 
-        DrawText("Press ENTER to restart", 1000/2 - MeasureText("Press ENTER to restart", 40)/2, 520, 40, DARKBLUE);
-    }
+    // Título: GAME OVER
+    const char *title = "GAME OVER";
+    int titleWidth = MeasureText(title, 60);
+    DrawText(title, rectX + (rectWidth - titleWidth) / 2, textY, 60, GOLD);
+    textY += 80;
+
+    // Score final
+    char scoreText[50];
+    sprintf(scoreText, "Score final: %d", score);
+    int scoreWidth = MeasureText(scoreText, 40);
+    DrawText(scoreText, rectX + (rectWidth - scoreWidth) / 2, textY, 40, WHITE);
+    textY += 60;
+
+    // Recorde
+    char recordeText[50];
+    sprintf(recordeText, "Recorde: %d", recorde);
+    int recordeWidth = MeasureText(recordeText, 40);
+    DrawText(recordeText, rectX + (rectWidth - recordeWidth) / 2, textY, 40, GOLD);
+    textY += 60;
+
+    // Instrução de reinício
+    const char *restartText = "Pressione ENTER para reiniciar!";
+    int restartWidth = MeasureText(restartText, 30);
+    DrawText(restartText, rectX + (rectWidth - restartWidth) / 2, textY, 30, DARKBLUE);}
+ 
 }
+
 
 // Funções de ranking //
-void CarregarRanking() {
-    FILE *arquivo = fopen("ranking.txt", "r");
+void CarregarRecorde() {
+    FILE *arquivo = fopen("recorde.txt", "r");
     if (arquivo == NULL) return;
-    for (int i = 0; i < RANKING; i++)
-        fscanf(arquivo, "%d", &ranking[i]);
+    fscanf(arquivo, "%d", &recorde);
     fclose(arquivo);
 }
 
-void SalvarRanking() {
-    FILE *arquivo = fopen("ranking.txt", "w");
+void SalvarRecorde() {
+    FILE *arquivo = fopen("recorde.txt", "w");
     if (arquivo == NULL) return;
-    for (int i = 0; i < RANKING; i++)
-        fprintf(arquivo, "%d\n", ranking[i]);
+    fprintf(arquivo, "%d\n", recorde);
     fclose(arquivo);
-}
-
-void InserirNoRanking(int novoScore) {
-    for (int i = 0; i < RANKING; i++) {
-        if (ranking[i] == novoScore) return;
-    }
-    for (int i = 0; i < RANKING; i++) {
-        if (novoScore > ranking[i]) {
-            for (int j = RANKING - 1; j > i; j--)
-                ranking[j] = ranking[j-1];
-            ranking[i] = novoScore;
-            SalvarRanking();
-            return;
-        }
-    }
 }
 
 // Desenho do tutorial //
