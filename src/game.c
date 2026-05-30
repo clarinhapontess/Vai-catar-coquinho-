@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include "screens.h"
 
 // Ranking //
 #define RANKING 5
@@ -32,9 +33,10 @@ bool bonusDourado = false;
 float bonusTimer = 0;
 bool gameOver = false;
 float gameTimer = 0;
-bool tutorial = true;
+bool tutorial = false;
 float playerSpeedMultiplier = 1.0f; 
 float cocoSpeedMultiplier = 1.0f;
+extern bool naHistoria;
 
 // Adiciona cocos conforme dificuldade aumenta //
 int cocosAdicionados = 2;
@@ -60,6 +62,7 @@ void InitGame() {
     morreu = LoadSound("assets/audio/morreu.mp3"); 
     maisVidas = LoadSound("assets/audio/maisVidas.mp3");
 
+    InitScreens();
     InitPlayer(); 
     InitCocos(); 
     CarregarRanking();
@@ -116,6 +119,11 @@ void UpdateGameProgression(float deltaTime) {
 
 // Atualização do jogo //
 void UpdateGame(float deltaTime) {
+    if (naHistoria) {
+        UpdateHistory();
+        return; // Sai da função para não processar o jogo atrás da história
+    }
+
     if (tutorial) {
         if (IsKeyPressed(KEY_ENTER)) tutorial = false;
         return;  
@@ -225,6 +233,13 @@ void UpdateGame(float deltaTime) {
 
 // Desenho do jogo //
 void DrawGame() {
+
+    // Tela de história (Overlay com texto e imagem) //
+    if (naHistoria) {
+        DrawHistory();
+        return; // Para o desenho aqui
+    }
+
     // Tela de tutorial //
     if (tutorial) {
         DrawTutorial();
