@@ -32,7 +32,8 @@ bool bonusDourado = false;
 float bonusTimer = 0;
 bool gameOver = false;
 float gameTimer = 0;
-bool tutorial = false;
+bool isPaused = false;  
+bool tutorial = true;
 float playerSpeedMultiplier = 1.0f; 
 float cocoSpeedMultiplier = 1.0f;
 extern bool naHistoria;
@@ -84,9 +85,9 @@ void InitGame() {
 
 // Atualização da dificuldade do jogo //
 void UpdateGameProgression(float deltaTime) {
+
     gameTimer += deltaTime;
     extern void AddCoco(); 
-
     // Sistema de progressão da branch danda //
     if (score >= 30 && cocosAdicionados == 2) {
         AddCoco();
@@ -116,11 +117,10 @@ void UpdateGameProgression(float deltaTime) {
 
 // Atualização do jogo //
 void UpdateGame(float deltaTime) {
-    if (naHistoria) {
-        UpdateHistory();
-        return; // Sai da função para não processar o jogo atrás da história
-    }
-
+    if (isPaused) {
+        UpdateMusicStream(musicaFundo);  // ✅ Importante: mantém a música sincronizada
+        return;}  // Não atualiza se pausado
+    
     if (tutorial) {
         if (IsKeyPressed(KEY_ENTER)) tutorial = false;
         return;  
@@ -130,6 +130,7 @@ void UpdateGame(float deltaTime) {
 
     // Restart //
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
+        
         gameOver = false;
         score = 0;
         vidas = 3;
@@ -244,6 +245,25 @@ void DrawGame() {
     if (tutorial) {
         DrawTutorial();
         return;
+    } ClearBackground((Color){154, 244, 255, 255});
+
+    // ... código de desenho do jogo (mar, areia, cocos, etc.) ...
+
+    // Tela de pause (overlay)
+    if (isPaused) {
+        DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.6f));
+
+        const char *pauseText = "PAUSADO";
+        int pauseFontSize = 80;
+        int pauseWidth = MeasureText(pauseText, pauseFontSize);
+        DrawText(pauseText, (1000 - pauseWidth) / 2, 150, pauseFontSize, RED);
+
+        const char *instructionText = "Pressione P ou ESC para continuar";
+        int instFontSize = 30;
+        int instWidth = MeasureText(instructionText, instFontSize);
+        DrawText(instructionText, (1000 - instWidth) / 2, 300, instFontSize, WHITE);
+
+        return;  // ✅ Não desenha o resto do jogo enquanto pausado
     }
 
     ClearBackground((Color){154, 244, 255, 255});
@@ -326,7 +346,7 @@ void DrawGame() {
     char scoreText[50];
     sprintf(scoreText, "Score final: %d", score);
     int scoreWidth = MeasureText(scoreText, 40);
-    DrawText(scoreText, rectX + (rectWidth - scoreWidth) / 2, textY, 40, WHITE);
+    DrawText(scoreText, rectX + (rectWidth - scoreWidth) / 2, textY, 40, RED);
     textY += 60;
 
     // Recorde

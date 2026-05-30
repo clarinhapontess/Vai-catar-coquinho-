@@ -31,6 +31,7 @@ extern float bonusTimer;
 extern float gameTimer;
 extern float cocoSpeedMultiplier;
 extern float playerSpeedMultiplier;
+extern bool isPaused;
 extern bool tutorial; 
 
 // Funções //
