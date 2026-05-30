@@ -237,8 +237,9 @@ void DrawGame() {
 
     // Tela de história (Overlay com texto e imagem) //
     if (naHistoria) {
-        DrawHistory();
-        return; // Para o desenho aqui
+        UpdateHistory();  // ✅ Atualiza a história (avança páginas)
+        DrawHistory();    // ✅ Desenha a história
+        return;
     }
 
     // Tela de tutorial //

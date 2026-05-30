@@ -33,7 +33,8 @@ extern float cocoSpeedMultiplier;
 extern float playerSpeedMultiplier;
 extern bool isPaused;
 extern bool tutorial; 
-
+extern bool naHistoria;
+extern bool isPaused;
 // Funções //
 void InitGame();
 void UpdateGame(float deltaTime);
