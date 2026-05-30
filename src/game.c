@@ -288,20 +288,46 @@ void DrawGame() {
         DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
+    if(gameOver){ // Dimensões do retângulo semitransparente
+    const int rectWidth = 600;
+    const int rectHeight = 350;
+    const int rectX = (1000 - rectWidth) / 2;      // Centralizado horizontalmente
+    const int rectY = (600 - rectHeight) / 2;      // Centralizado verticalmente
+    const int padding = 30;                         // Espaço interno
 
-    // Tela de Game Over com exibição do Top 5 do Ranking //
-    if (gameOver) {
+    // Desenhar retângulo semitransparente
+    DrawRectangle(rectX, rectY, rectWidth, rectHeight, Fade(WHITE, 0.5f));
+
+    // Posição inicial dos textos
+    int textY = rectY + padding;
+
+    // Título: GAME OVER
+    const char *title = "GAME OVER";
+    int titleWidth = MeasureText(title, 60);
+    DrawText(title, rectX + (rectWidth - titleWidth) / 2, textY, 60, GOLD);
+    textY += 80;
+
+    // Score final
     char scoreText[50];
     sprintf(scoreText, "Score final: %d", score);
-    DrawText(scoreText, 1000/2 - MeasureText(scoreText, 60)/2, 250, 60, RED);
+    int scoreWidth = MeasureText(scoreText, 40);
+    DrawText(scoreText, rectX + (rectWidth - scoreWidth) / 2, textY, 40, WHITE);
+    textY += 60;
 
+    // Recorde
     char recordeText[50];
     sprintf(recordeText, "Recorde: %d", recorde);
-    DrawText(recordeText, 1000/2 - MeasureText(recordeText, 40)/2, 340, 40, DARKBLUE);
+    int recordeWidth = MeasureText(recordeText, 40);
+    DrawText(recordeText, rectX + (rectWidth - recordeWidth) / 2, textY, 40, GOLD);
+    textY += 60;
 
-    DrawText("Pressione ENTER para reiniciar!", 1000/2 - MeasureText("Pressione ENTER para reiniciar!", 30)/2, 450, 30, DARKBLUE);
+    // Instrução de reinício
+    const char *restartText = "Pressione ENTER para reiniciar!";
+    int restartWidth = MeasureText(restartText, 30);
+    DrawText(restartText, rectX + (rectWidth - restartWidth) / 2, textY, 30, DARKBLUE);}
+ 
 }
-}
+
 
 // Funções de ranking //
 void CarregarRecorde() {
