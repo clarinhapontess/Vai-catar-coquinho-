@@ -122,7 +122,15 @@ void UpdateGame(float deltaTime) {
     }
 
     if (tutorial) {
-        if (IsKeyPressed(KEY_ENTER)) tutorial = false;
+        if (IsKeyPressed(KEY_ENTER)) {
+            tutorial = false;
+            
+            // Inicia a música
+            PlayMusicStream(musicaFundo);
+            
+            // 🌟 PULA DIRETO PARA OS 6 SEGUNDOS!
+            SeekMusicStream(musicaFundo, 7.0f); 
+        }
         return;  
     }
 
@@ -143,6 +151,7 @@ void UpdateGame(float deltaTime) {
         InitPlayer(); 
 
         PlayMusicStream(musicaFundo); 
+        SeekMusicStream(musicaFundo, 7.0f);
         return;
     }
 
