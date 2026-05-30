@@ -48,7 +48,6 @@ int main() {
     UnloadSound(maisVidas);
     UnloadFont(GasoekOne);
     CloseAudioDevice();
-    unloadfont(GasoekOne);
     CloseWindow();
     return 0;
 }
