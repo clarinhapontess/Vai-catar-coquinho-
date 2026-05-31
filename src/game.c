@@ -168,8 +168,9 @@ void UpdateGame(float deltaTime) {
             // Só deixa começar se a skin selecionada estiver liberada!
             if (skinSelecionada <= maiorSkinDesbloqueada) {
                 tutorial = false;
+                if (musicaFundo.stream.buffer != NULL) {
                 PlayMusicStream(musicaFundo);
-                SeekMusicStream(musicaFundo, 7.0f); 
+                SeekMusicStream(musicaFundo, 7.0f); }
             } else {
                 PlaySound(perdeuPontos); // Som de erro ao tentar escolher trancado
             }
