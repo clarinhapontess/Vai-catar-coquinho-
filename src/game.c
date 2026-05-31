@@ -38,34 +38,54 @@ float playerSpeedMultiplier = 1.0f;
 float cocoSpeedMultiplier = 1.0f;
 extern bool naHistoria;
 
+// --- SISTEMA GLOBAL DE SKINS --- //
+int skinSelecionada = 0;
+int maiorSkinDesbloqueada = 0;
+Texture2D texturasSkins[6][5];
+const char* nomesSkins[6] = { "player", "maria", "gaiamum", "pirata", "robo", "chico" };
+
 // Adiciona cocos conforme dificuldade aumenta //
 int cocosAdicionados = 2;
 
 // Protótipos das funções de ranking e interface //
-
 void DrawTutorial();
 
-// Inicialização do jogo //
+// Inicialização do jogo (carrega texturas, sons, configurações iniciais) //
 void InitGame() {
     InitAudioDevice();
 
-    // Música de fundo //
+    // Música de fundo e áudios
     musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.wav");
-    PlayMusicStream(musicaFundo);
     SetMusicVolume(musicaFundo, 0.5f);
-
-    // Efeitos sonoros //
     ganhouPontos = LoadSound("assets/audio/ganhouPontos.wav");
     perdeuPontos = LoadSound("assets/audio/perdeuPontos.wav");
     morreu = LoadSound("assets/audio/morreu.wav"); 
     maisVidas = LoadSound("assets/audio/maisVidas.wav");
 
-    InitScreens();
-    InitPlayer(); 
-    InitCocos(); 
-    CarregarRecorde();
+    // --- 1º CARREGA AS TEXTURAS DAS SKINS --- //
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 5; j++) {
+            char caminho[100];
+            sprintf(caminho, "assets/%s/%s%d.png", nomesSkins[i], nomesSkins[i], j + 1);
+            texturasSkins[i][j] = LoadTexture(caminho);
+        }
+    }
 
-    // Carrega as texturas //
+    // Carrega o recorde e define o que está desbloqueado
+    CarregarRecorde();
+    if (recorde >= 200)      maiorSkinDesbloqueada = 5;
+    else if (recorde >= 120) maiorSkinDesbloqueada = 4;
+    else if (recorde >= 80)  maiorSkinDesbloqueada = 3;
+    else if (recorde >= 50)  maiorSkinDesbloqueada = 2;
+    else if (recorde >= 20)  maiorSkinDesbloqueada = 1;
+    else                     maiorSkinDesbloqueada = 0;
+
+    // --- 2º INICIALIZA OS ELEMENTOS DO JOGO --- //
+    InitScreens();
+    InitPlayer();   // Agora o Player inicia sabendo que as texturas existem!
+    InitCocos(); 
+
+    // Carrega as texturas de ambiente //
     areiaTexture = LoadTexture("assets/backgrounds/areia.png");
     mar1Texture = LoadTexture("assets/backgrounds/mar1.png");
     mar2Texture = LoadTexture("assets/backgrounds/mar2.png");
@@ -85,9 +105,9 @@ void InitGame() {
 
 // Atualização da dificuldade do jogo //
 void UpdateGameProgression(float deltaTime) {
-
     gameTimer += deltaTime;
     extern void AddCoco(); 
+    
     // Sistema de progressão da branch danda //
     if (score >= 30 && cocosAdicionados == 2) {
         AddCoco();
@@ -118,17 +138,24 @@ void UpdateGameProgression(float deltaTime) {
 // Atualização do jogo //
 void UpdateGame(float deltaTime) {
     if (isPaused) {
-        UpdateMusicStream(musicaFundo);  // ✅ Importante: mantém a música sincronizada
-        return;}  // Não atualiza se pausado
+        UpdateMusicStream(musicaFundo);  
+        return;
+    }  
     
     if (tutorial) {
+        // Seleção de skins liberadas usando as setas CIMA e BAIXO
+        if (IsKeyPressed(KEY_UP)) {
+            skinSelecionada++;
+            if (skinSelecionada > maiorSkinDesbloqueada) skinSelecionada = 0;
+        }
+        if (IsKeyPressed(KEY_DOWN)) {
+            skinSelecionada--;
+            if (skinSelecionada < 0) skinSelecionada = maiorSkinDesbloqueada;
+        }
+
         if (IsKeyPressed(KEY_ENTER)) {
             tutorial = false;
-            
-            // Inicia a música
             PlayMusicStream(musicaFundo);
-            
-            // 🌟 PULA DIRETO PARA OS 6 SEGUNDOS!
             SeekMusicStream(musicaFundo, 7.0f); 
         }
         return;  
@@ -138,7 +165,6 @@ void UpdateGame(float deltaTime) {
 
     // Restart //
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
-        
         gameOver = false;
         score = 0;
         vidas = 3;
@@ -237,17 +263,23 @@ void UpdateGame(float deltaTime) {
         if (score > recorde) {
             recorde = score;
             SalvarRecorde();
+            
+            // Recalcula o teto de skins caso quebre o recorde geral na rodada
+            if (recorde >= 200)      maiorSkinDesbloqueada = 5;
+            else if (recorde >= 120) maiorSkinDesbloqueada = 4;
+            else if (recorde >= 80)  maiorSkinDesbloqueada = 3;
+            else if (recorde >= 50)  maiorSkinDesbloqueada = 2;
+            else if (recorde >= 20)  maiorSkinDesbloqueada = 1;
         }
     }
 }
 
 // Desenho do jogo //
 void DrawGame() {
-
     // Tela de história (Overlay com texto e imagem) //
     if (naHistoria) {
-        UpdateHistory();  // ✅ Atualiza a história (avança páginas)
-        DrawHistory();    // ✅ Desenha a história
+        UpdateHistory();  
+        DrawHistory();    
         return;
     }
 
@@ -255,9 +287,9 @@ void DrawGame() {
     if (tutorial) {
         DrawTutorial();
         return;
-    } ClearBackground((Color){154, 244, 255, 255});
+    } 
 
-    // ... código de desenho do jogo (mar, areia, cocos, etc.) ...
+    ClearBackground((Color){154, 244, 255, 255});
 
     // Tela de pause (overlay)
     if (isPaused) {
@@ -273,14 +305,11 @@ void DrawGame() {
         int instWidth = MeasureText(instructionText, instFontSize);
         DrawText(instructionText, (1000 - instWidth) / 2, 300, instFontSize, WHITE);
 
-        return;  // ✅ Não desenha o resto do jogo enquanto pausado
+        return;  
     }
-
-    ClearBackground((Color){154, 244, 255, 255});
 
     // Mar //
     float tempoAtual = GetTime();
-
     int waveOffset = sinf(tempoAtual * 1.5f) * 8;
     DrawTexture(mar1Texture, 0, waveOffset, WHITE);
 
@@ -299,23 +328,19 @@ void DrawGame() {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(GOLD, 0.15f));
     }
 
-    // --- INTERFACE DE PONTUAÇÃO E VIDAS (Fontes aumentadas para 34 e sem barra) --- //
-    DrawText(TextFormat("Cocos: %i", score), 832, 559, 34, BLACK); // Sombra
+    // --- INTERFACE DE PONTUAÇÃO E VIDAS --- //
+    DrawText(TextFormat("Cocos: %i", score), 832, 559, 34, BLACK); 
     DrawText(TextFormat("Cocos: %i", score), 830, 557, 34, RAYWHITE);
 
-    DrawText("Vidas: ", 32, 559, 34, BLACK); // Sombra
+    DrawText("Vidas: ", 32, 559, 34, BLACK); 
     DrawText("Vidas: ", 30, 557, 34, RAYWHITE);
 
-    // Escala e posicionamento dos corações //
+    // Desenho dos corações
     float escalaCoracao = 0.6f;
     for (int i = 0; i < vidas; i++) {
         float espacamentoHorizontal = i * 45.0f;
-        Vector2 posicao = { 140.0f + espacamentoHorizontal, 555.0f }; // Ajustado para X = 140 para não sobrepor o texto maior
-        
-        // Sombra do coração para destacar na areia
+        Vector2 posicao = { 140.0f + espacamentoHorizontal, 555.0f }; 
         DrawTextureEx(coracaoTexture, (Vector2){ posicao.x + 2, posicao.y + 2 }, 0.0f, escalaCoracao, Fade(BLACK, 0.60f));
-        
-        // Coração principal
         DrawTextureEx(coracaoTexture, posicao, 0.0f, escalaCoracao, WHITE);
     }
 
@@ -323,56 +348,61 @@ void DrawGame() {
     if (bonusDourado) {
         char textoBonus[30];
         sprintf(textoBonus, "BÔNUS DOURADO: %.0f s", bonusTimer);
-        
         int larguraTexto = MeasureText(textoBonus, 28); 
         int xCentralizado = (GetScreenWidth() / 2) - (larguraTexto / 2);
-
         Color corBrilho = (sinf(GetTime() * 10) > 0) ? GOLD : YELLOW; 
         
-        // Sombra e texto principal
         DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
-    if(gameOver){ // Dimensões do retângulo semitransparente
-    const int rectWidth = 600;
-    const int rectHeight = 350;
-    const int rectX = (1000 - rectWidth) / 2;      // Centralizado horizontalmente
-    const int rectY = (600 - rectHeight) / 2;      // Centralizado verticalmente
-    const int padding = 30;                         // Espaço interno
 
-    // Desenhar retângulo semitransparente
-    DrawRectangle(rectX, rectY, rectWidth, rectHeight, Fade(WHITE, 0.5f));
+    // --- PAINEL DE GAME OVER --- //
+    // --- PAINEL DE GAME OVER --- //
+    if (gameOver) { 
+        const int rectWidth = 600;
+        const int rectHeight = 400; // Altura ideal para caber tudo com o caranguejo embaixo
+        const int rectX = (1000 - rectWidth) / 2;      
+        const int rectY = (600 - rectHeight) / 2;      
 
-    // Posição inicial dos textos
-    int textY = rectY + padding;
+        DrawRectangle(rectX, rectY, rectWidth, rectHeight, Fade(WHITE, 0.8f));
 
-    // Título: GAME OVER
-    const char *title = "GAME OVER";
-    int titleWidth = MeasureText(title, 60);
-    DrawText(title, rectX + (rectWidth - titleWidth) / 2, textY, 60, GOLD);
-    textY += 80;
+        // Posições verticais (Y) fixas para garantir que nada suma ou quebre
+        int yTitulo     = rectY + 30;
+        int yScore      = rectY + 110;
+        int yRecorde    = rectY + 170;
+        int yRestart    = rectY + 230;
+        int yCaranguejo = rectY + 300; // Posição perfeita na parte de baixo do retângulo
 
-    // Score final
-    char scoreText[50];
-    sprintf(scoreText, "Score final: %d", score);
-    int scoreWidth = MeasureText(scoreText, 40);
-    DrawText(scoreText, rectX + (rectWidth - scoreWidth) / 2, textY, 40, RED);
-    textY += 60;
+        // Título: GAME OVER
+        const char *title = "GAME OVER";
+        int titleWidth = MeasureText(title, 55);
+        DrawText(title, rectX + (rectWidth - titleWidth) / 2, yTitulo, 55, RED);
 
-    // Recorde
-    char recordeText[50];
-    sprintf(recordeText, "Recorde: %d", recorde);
-    int recordeWidth = MeasureText(recordeText, 40);
-    DrawText(recordeText, rectX + (rectWidth - recordeWidth) / 2, textY, 40, GOLD);
-    textY += 60;
+        // Score final
+        char scoreText[50];
+        sprintf(scoreText, "Score final: %d", score);
+        int scoreWidth = MeasureText(scoreText, 36);
+        DrawText(scoreText, rectX + (rectWidth - scoreWidth) / 2, yScore, 36, BLACK);
 
-    // Instrução de reinício
-    const char *restartText = "Pressione ENTER para reiniciar!";
-    int restartWidth = MeasureText(restartText, 30);
-    DrawText(restartText, rectX + (rectWidth - restartWidth) / 2, textY, 30, DARKBLUE);}
- 
+        // Recorde
+        char recordeText[50];
+        sprintf(recordeText, "Recorde Máximo: %d", recorde);
+        int recordeWidth = MeasureText(recordeText, 36);
+        DrawText(recordeText, rectX + (rectWidth - recordeWidth) / 2, yRecorde, 36, GOLD);
+
+        // Instrução de reinício
+        const char *restartText = "Pressione ENTER para reiniciar!";
+        int restartWidth = MeasureText(restartText, 26);
+        DrawText(restartText, rectX + (rectWidth - restartWidth) / 2, yRestart, 26, DARKBLUE);
+
+        float caranguejoGameOverX = 425.0f; // Aumente para ir para a direita, diminua para ir para a esquerda
+        float caranguejoGameOverY = 360.0f; // Aumente para ir para baixo, diminua para ir para cima
+
+        // Desenha usando os valores manuais acima
+        Vector2 posChorando = { caranguejoGameOverX, caranguejoGameOverY }; 
+        DrawTextureEx(texturasSkins[skinSelecionada][4], posChorando, 0.0f, 1.0f, WHITE);
+    }
 }
-
 
 // Funções de ranking //
 void CarregarRecorde() {
@@ -389,7 +419,7 @@ void SalvarRecorde() {
     fclose(arquivo);
 }
 
-// Desenho do tutorial //
+// Desenho do tutorial e Seletor //
 void DrawTutorial() {
     ClearBackground((Color){154, 244, 255, 255});
 
@@ -402,15 +432,30 @@ void DrawTutorial() {
     DrawTexture(coqueirosTexture, 0, 0, WHITE);
 
     // Fundo branco semitransparente atrás do texto //
-    DrawRectangle(100, 40, 800, 520, Fade(WHITE, 0.75f));
+    DrawRectangle(100, 30, 800, 540, Fade(WHITE, 0.75f));
 
-    DrawText("VAI CATAR COQUINHO", 1000/2 - MeasureText("VAI CATAR COQUINHO", 60)/2, 50, 60, DARKGREEN);
-    DrawText("Como jogar:", 1000/2 - MeasureText("Como jogar:", 30)/2, 140, 30, BLACK);
-    DrawText("Use as setas <- -> para mover o caranguejo", 1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 24)/2, 185, 24, BLACK);
-    DrawText("Tipos de itens:", 1000/2 - MeasureText("Tipos de itens:", 30)/2, 240, 30, BLACK);
-    DrawText("Coco verde: +1 ponto", 1000/2 - MeasureText("Coco verde: +1 ponto", 24)/2, 285, 24, DARKGREEN);
-    DrawText("Coco dourado: dobra os pontos por 20 segundos!", 1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 24)/2, 320, 24, GOLD);
-    DrawText("Agua de coco: +1 vida", 1000/2 - MeasureText("Agua de coco: +1 vida", 24)/2, 355, 24, BLUE);
-    DrawText("Lixo: -1 vida", 1000/2 - MeasureText("Lixo: -1 vida", 24)/2, 390, 24, RED);
-    DrawText("Pressione ENTER para comecar!", 1000/2 - MeasureText("Pressione ENTER para comecar!", 30)/2, 460, 30, DARKBLUE);
+    DrawText("VAI CATAR COQUINHO", 1000/2 - MeasureText("VAI CATAR COQUINHO", 50)/2, 45, 50, DARKGREEN);
+    DrawText("Como jogar:", 1000/2 - MeasureText("Como jogar:", 26)/2, 115, 26, BLACK);
+    DrawText("Use as setas <- -> para mover o caranguejo", 1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 22)/2, 150, 22, BLACK);
+    
+    DrawText("Tipos de itens:", 1000/2 - MeasureText("Tipos de itens:", 26)/2, 195, 26, BLACK);
+    DrawText("Coco verde: +1 ponto", 1000/2 - MeasureText("Coco verde: +1 ponto", 22)/2, 230, 22, DARKGREEN);
+    DrawText("Coco dourado: dobra os pontos por 20 segundos!", 1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 22)/2, 255, 22, GOLD);
+    DrawText("Agua de coco: +1 vida", 1000/2 - MeasureText("Agua de coco: +1 vida", 22)/2, 280, 22, BLUE);
+    DrawText("Lixo: -1 vida", 1000/2 - MeasureText("Lixo: -1 vida", 22)/2, 305, 22, RED);
+    
+    // --- EXIBIÇÃO DA SKIN SELECIONADA (AJUSTADO) --- //
+    DrawText("Escolha seu Visual (Setas de CIMA / BAIXO):", 1000/2 - MeasureText("Escolha seu Visual (Setas de CIMA / BAIXO):", 24)/2, 345, 24, BLACK);
+    
+    // Subi um pouco o Y para 370 e centralizei baseado no tamanho 64x64
+    Vector2 posSkinMenu = { (1000 / 2) - 60, 370 };
+    
+    // Desenha com escala //
+    DrawTextureEx(texturasSkins[skinSelecionada][0], posSkinMenu, 0.0f, 1.0f, WHITE);
+
+    char textoSkin[60];
+    sprintf(textoSkin, "< Skin: %s >", nomesSkins[skinSelecionada]);
+    DrawText(textoSkin, 1000/2 - MeasureText(textoSkin, 24)/2, 490, 24, ORANGE);
+
+    DrawText("Pressione ENTER para comecar!", 1000/2 - MeasureText("Pressione ENTER para comecar!", 26)/2, 530, 26, DARKBLUE);
 }

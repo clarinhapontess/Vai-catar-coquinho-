@@ -26,16 +26,16 @@ void SetCocoType(Coco *coco) {
     float minSpeed = 2;
     float maxSpeed = 2.5f;
 
-    if (score >= 30) {
+    if (score >= 10) {
         minSpeed = 2;
         maxSpeed = 3.5f;
-    } else if (score >= 50) {
+    } else if (score >= 25) {
         minSpeed = 3;
         maxSpeed = 4;
-    } else if (score >= 100) {
+    } else if (score >= 40) {
         minSpeed = 3;
         maxSpeed = 4.5f;
-    } else if (score >= 150) {
+    } else if (score >= 60) {
         minSpeed = 3.5f;
         maxSpeed = 5;
     } else {
