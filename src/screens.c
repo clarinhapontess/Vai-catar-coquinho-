@@ -248,7 +248,7 @@ void DrawGameOverScreen(int score, int recorde, int skinSelecionada, Texture2D t
     Vector2 gameOverPos = { (1000 - gameOverSize.x) / 2.0f, 40.0f };
     Vector2 scorePos    = { (1000 - scoreSize.x) / 2.0f, 170.0f };
     Vector2 recordePos  = { (1000 - recordeSize.x) / 2.0f, 270.0f };
-    Vector2 instructionPos = { (1000 - instructionSize.x) / 2.0f, 430.0f };
+    Vector2 instructionPos = { (1000 - instructionSize.x) / 2.0f, 410.0f };
 
     // --- DESENHO DOS TEXTOS ---
     
@@ -318,16 +318,25 @@ void DrawGameOverScreen(int score, int recorde, int skinSelecionada, Texture2D t
 
 // --- TELA DE CAPA / MENU INICIAL --- //
 void DrawCapaScreen() {
+    // Trazendo as texturas e o array de skins lá do game.c
+    extern Texture2D areiaTexture;
+    extern Texture2D coqueirosTexture;
+    extern Texture2D texturasSkins[6][5];
+
     // Fundo azul praia estático para a capa
     ClearBackground((Color){154, 244, 255, 255});
     
+    // 🌴 1. DESENHA O CENÁRIO DE FUNDO (Areia e Coqueiros)
+    DrawTexture(areiaTexture, 0, 0, WHITE);
+    DrawTexture(coqueirosTexture, 0, 0, WHITE);
+
     float spacingGasoek = 2.0f;
     float spacingRubik = 1.0f;
 
-    // 1. TÍTULO DO JOGO (Grande e imponente)
+    // 2. TÍTULO DO JOGO (Grande e imponente)
     const char* tituloText = "VAI CATAR COQUINHO!";
     Vector2 sizeTitulo = MeasureTextEx(GasoekOne, tituloText, 64, spacingGasoek);
-    Vector2 posTitulo = { 500.0f - (sizeTitulo.x / 2.0f), 180.0f };
+    Vector2 posTitulo = { 500.0f - (sizeTitulo.x / 2.0f), 150.0f }; // Subi um pouco (de 180 para 130) para dar espaço ao Crabisson
     
     // Borda preta no título
     DrawTextEx(GasoekOne, tituloText, (Vector2){posTitulo.x - 3, posTitulo.y - 3}, 64, spacingGasoek, BLACK);
@@ -336,19 +345,32 @@ void DrawCapaScreen() {
     DrawTextEx(GasoekOne, tituloText, (Vector2){posTitulo.x + 3, posTitulo.y + 3}, 64, spacingGasoek, BLACK);
     DrawTextEx(GasoekOne, tituloText, posTitulo, 64, spacingGasoek, ORANGE);
 
-    // 2. SUBTÍTULO OU FRASE DE EFEITO
+    // 3. SUBTÍTULO OU FRASE DE EFEITO
     const char* subText = "As aventuras de crabisson o caranguejo!";
     Vector2 sizeSub = MeasureTextEx(Rubik, subText, 24, spacingRubik);
-    DrawTextEx(Rubik, subText, (Vector2){500.0f - (sizeSub.x / 2.0f), 260.0f}, 24, spacingRubik, DARKGRAY);
+    DrawTextEx(Rubik, subText, (Vector2){500.0f - (sizeSub.x / 2.0f), 230.0f}, 24, spacingRubik, DARKGRAY);
 
-    // 3. TEXTO PISCANTE PARA COMEÇAR
+    // 🦀 4. DESENHA O CRABISSON 1 (Skin 0, Sprite 0) CENTRALIZADO
+    // Centraliza o sprite de 100px de largura em X=500 (500 - 50 = 450)
+    float crabissonX = 450.0f;
+    float crabissonY = 450.0f;
+    Vector2 posCrabisson = { crabissonX, crabissonY };
+    
+    // Sombra sutil preta atrás do Crabisson para dar destaque na areia
+    DrawTextureEx(texturasSkins[0][0], (Vector2){ crabissonX + 2, crabissonY + 2 }, 0.0f, 1.0f, Fade(BLACK, 0.4f));
+    // O grande Crabisson na sua glória original:
+    DrawTextureEx(texturasSkins[0][0], posCrabisson, 0.0f, 1.0f, WHITE);
+
+    // 5. TEXTO PISCANTE PARA COMEÇAR
     const char* startText = "Pressione ENTER para iniciar a jornada";
     float pisca = sinf(GetTime() * 5.0f); // Faz o texto piscar suavemente
     Color corTexto = (pisca > 0.0f) ? DARKBLUE : Fade(DARKBLUE, 0.3f);
 
     Vector2 sizeStart = MeasureTextEx(GasoekOne, startText, 26, spacingGasoek);
-    DrawTextEx(GasoekOne, startText, (Vector2){500.0f - (sizeStart.x / 2.0f), 420.0f}, 26, spacingGasoek, corTexto);
+    // Adiciona uma sombra preta no botão start para garantir leitura em cima da areia
+    DrawTextEx(GasoekOne, startText, (Vector2){500.0f - (sizeStart.x / 2.0f) + 1, 301.0f}, 26, spacingGasoek, BLACK);
+    DrawTextEx(GasoekOne, startText, (Vector2){500.0f - (sizeStart.x / 2.0f), 300.0f}, 26, spacingGasoek, corTexto);
 
     // Créditos simples no rodapé
-    DrawTextEx(Rubik, "Desenvolvido em Raylib", (Vector2){30, 560}, 16, spacingRubik, GRAY);
+    DrawTextEx(Rubik, "Desenvolvido em Raylib", (Vector2){30, 560}, 16, spacingRubik, DARKGRAY);
 }
