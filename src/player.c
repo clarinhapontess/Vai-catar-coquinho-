@@ -8,8 +8,8 @@ void InitPlayer() {
     // As texturas não são mais carregadas aqui individualmente! 
     // Elas são carregadas via matriz automática na InitGame().
 
-    player.x = 450;
-    player.y = 450;
+    player.x = GetScreenWidth() * 0.45f;
+    player.y = GetScreenHeight() * 0.75f;
     player.speed = 7;   //-> velocidade do jogador //
     player.width = 100; //-> largura do jogador //
     player.height = 40; //-> altura do jogador //

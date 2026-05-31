@@ -39,7 +39,9 @@ bool tutorial = true;
 float playerSpeedMultiplier = 1.0f; 
 float cocoSpeedMultiplier = 1.0f;
 extern bool naHistoria;
-
+//variáveis da funcionalidade de mutar jogo 
+bool isMuted = false;
+float volumeAnterior = 0.5f;
 // --- SISTEMA GLOBAL DE SKINS --- //
 int skinSelecionada = 0;
 int maiorSkinDesbloqueada = 0;
@@ -54,7 +56,24 @@ int cocosAdicionados = 2;
 void DrawTutorial();
 void CarregarRecorde();
 void SalvarRecorde();
-
+//função de mutar volume 
+void ToggleMute() {
+    isMuted = !isMuted;
+    //quando a função togle é chamada , isMuted recebe o valor booleano oposto do que ele já é 
+    if (isMuted) {
+        SetMusicVolume(musicaFundo, 0.0f);
+        SetSoundVolume(ganhouPontos, 0.0f);
+        SetSoundVolume(perdeuPontos, 0.0f);
+        SetSoundVolume(morreu, 0.0f);
+        SetSoundVolume(maisVidas, 0.0f);
+    } else {
+        SetMusicVolume(musicaFundo, volumeAnterior);
+        SetSoundVolume(ganhouPontos, 1.0f);
+        SetSoundVolume(perdeuPontos, 1.0f);
+        SetSoundVolume(morreu, 1.0f);
+        SetSoundVolume(maisVidas, 1.0f);
+    }
+}
 // Inicialização do jogo (carrega texturas, sons, configurações iniciais) //
 void InitGame() {
     InitAudioDevice();
@@ -504,9 +523,9 @@ void DrawTutorial() {
     DrawTextEx(GasoekOne, tituloTexto, (Vector2){(1000 - tituloMedidas.x)/2, 45}, tituloSize, 1.0f, DARKGREEN);
 
     // Textos informativos menores permanecem legíveis com fonte padrão limpa
-    DrawText("Como jogar:", 1000/2 - MeasureText("Como jogar:", 26)/2, 115, 26, BLACK);
-    DrawText("Use as setas <- -> para mover o caranguejo", 1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 22)/2, 150, 22, BLACK);
-    
+    DrawText("Como jogar:", 1000/2 - MeasureText("Como jogar:", 26)/2, 100, 26, BLACK);
+    DrawText("Use as setas <- -> para mover o caranguejo", 1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 22)/2, 125, 22, BLACK);
+    DrawText("aperte p para pausar o jogo e m para mutar",1000/2-MeasureText("aperte p para pausar o jogo e m para mutar ",22)/2, 150, 22, BLACK);
     DrawText("Tipos de itens:", 1000/2 - MeasureText("Tipos de itens:", 26)/2, 195, 26, BLACK);
     DrawText("Coco verde: +1 ponto", 1000/2 - MeasureText("Coco verde: +1 ponto", 22)/2, 230, 22, DARKGREEN);
     DrawText("Coco dourado: dobra os pontos por 20 segundos!", 1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 22)/2, 255, 22, GOLD);

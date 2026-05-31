@@ -32,6 +32,8 @@ extern float gameTimer;
 extern float cocoSpeedMultiplier;
 extern float playerSpeedMultiplier;
 extern bool isPaused;
+//booleano de permissão de som 
+extern bool isMuted;
 extern bool tutorial; 
 extern bool naHistoria;
 extern bool isPaused;
@@ -43,6 +45,7 @@ void UpdateGame(float deltaTime);
 void DrawGame();
 void UpdateGameProgression(float deltaTime);
 void DrawTutorial(); 
+void ToggleMute();
 void CarregarRecorde();
 void SalvarRecorde();
 
