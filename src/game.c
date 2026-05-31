@@ -355,54 +355,91 @@ void DrawGame() {
         DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
+    
+// --- PAINEL DE GAME OVER --- //
+    if (gameOver) {
+        // Fundo semitransparente cobrindo a tela
+        DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
 
-    // --- PAINEL DE GAME OVER --- //
-    // --- PAINEL DE GAME OVER --- //
-    if (gameOver) { 
-        const int rectWidth = 600;
-        const int rectHeight = 400; // Altura ideal para caber tudo com o caranguejo embaixo
-        const int rectX = (1000 - rectWidth) / 2;      
-        const int rectY = (600 - rectHeight) / 2;      
+        // Tamanhos de fonte proporcionais baseados na GasoekOne
+        float gameOverFontSize = 120.0f;           // Base
+        float scoreFontSize = 84.0f;               // 30% menor
+        float recordeFontSize = 60.0f;             // 50% menor
+        float instructionFontSize = 35.0f;         // Instrução
 
-        DrawRectangle(rectX, rectY, rectWidth, rectHeight, Fade(WHITE, 0.8f));
+        // Spacing com borda
+        float gameOverSpacing = 1.2f;
+        float scoreSpacing = 1.0f;
+        float recordeSpacing = 0.9f;
+        float instructionSpacing = 0.75f;
 
-        // Posições verticais (Y) fixas para garantir que nada suma ou quebre
-        int yTitulo     = rectY + 30;
-        int yScore      = rectY + 110;
-        int yRecorde    = rectY + 170;
-        int yRestart    = rectY + 230;
-        int yCaranguejo = rectY + 300; // Posição perfeita na parte de baixo do retângulo
-
-        // Título: GAME OVER
-        const char *title = "GAME OVER";
-        int titleWidth = MeasureText(title, 55);
-        DrawText(title, rectX + (rectWidth - titleWidth) / 2, yTitulo, 55, RED);
-
-        // Score final
+        // Montagem dos textos
+        const char *gameOverText = "GAME OVER";
         char scoreText[50];
         sprintf(scoreText, "Score final: %d", score);
-        int scoreWidth = MeasureText(scoreText, 36);
-        DrawText(scoreText, rectX + (rectWidth - scoreWidth) / 2, yScore, 36, BLACK);
-
-        // Recorde
         char recordeText[50];
         sprintf(recordeText, "Recorde Máximo: %d", recorde);
-        int recordeWidth = MeasureText(recordeText, 36);
-        DrawText(recordeText, rectX + (rectWidth - recordeWidth) / 2, yRecorde, 36, GOLD);
+        const char *instructionText = "Pressione ENTER para reiniciar!";
 
-        // Instrução de reinício
-        const char *restartText = "Pressione ENTER para reiniciar!";
-        int restartWidth = MeasureText(restartText, 26);
-        DrawText(restartText, rectX + (rectWidth - restartWidth) / 2, yRestart, 26, DARKBLUE);
+        // Medir tamanhos exatos com DrawTextEx
+        Vector2 gameOverSize = MeasureTextEx(GasoekOne, gameOverText, gameOverFontSize, gameOverSpacing);
+        Vector2 scoreSize = MeasureTextEx(GasoekOne, scoreText, scoreFontSize, scoreSpacing);
+        Vector2 recordeSize = MeasureTextEx(GasoekOne, recordeText, recordeFontSize, recordeSpacing);
+        Vector2 instructionSize = MeasureTextEx(GasoekOne, instructionText, instructionFontSize, instructionSpacing);
 
-        float caranguejoGameOverX = 425.0f; // Aumente para ir para a direita, diminua para ir para a esquerda
-        float caranguejoGameOverY = 360.0f; // Aumente para ir para baixo, diminua para ir para cima
+        // Posições verticais e horizontais centralizadas na tela
+        Vector2 gameOverPos = { (1000 - gameOverSize.x) / 2.0f, 60.0f };
+        Vector2 scorePos    = { (1000 - scoreSize.x) / 2.0f, 200.0f };
+        Vector2 recordePos  = { (1000 - recordeSize.x) / 2.0f, 310.0f };
+        Vector2 instructionPos = { (1000 - instructionSize.x) / 2.0f, 430.0f };
 
-        // Desenha usando os valores manuais acima
+        // 1. Desenhar GAME OVER com borda preta (Texto principal: GOLD)
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx != 0 || dy != 0) {
+                    DrawTextEx(GasoekOne, gameOverText, (Vector2){gameOverPos.x + dx, gameOverPos.y + dy}, gameOverFontSize, gameOverSpacing, BLACK);
+                }
+            }
+        }
+        DrawTextEx(GasoekOne, gameOverText, gameOverPos, gameOverFontSize, gameOverSpacing, GOLD);
+
+        // 2. Desenhar Score com borda preta (Texto principal: WHITE)
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx != 0 || dy != 0) {
+                    DrawTextEx(GasoekOne, scoreText, (Vector2){scorePos.x + dx, scorePos.y + dy}, scoreFontSize, scoreSpacing, BLACK);
+                }
+            }
+        }
+        DrawTextEx(GasoekOne, scoreText, scorePos, scoreFontSize, scoreSpacing, WHITE);
+
+        // 3. Desenhar Recorde com borda preta (Texto principal: RED)
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx != 0 || dy != 0) {
+                    DrawTextEx(GasoekOne, recordeText, (Vector2){recordePos.x + dx, recordePos.y + dy}, recordeFontSize, recordeSpacing, BLACK);
+                }
+            }
+        }
+        DrawTextEx(GasoekOne, recordeText, recordePos, recordeFontSize, recordeSpacing, RED);
+
+        // 4. Desenhar Instrução com borda preta (Texto principal: WHITE)
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx != 0 || dy != 0) {
+                    DrawTextEx(GasoekOne, instructionText, (Vector2){instructionPos.x + dx, instructionPos.y + dy}, instructionFontSize, instructionSpacing, BLACK);
+                }
+            }
+        }
+        DrawTextEx(GasoekOne, instructionText, instructionPos, instructionFontSize, instructionSpacing, WHITE);
+
+        // 🛠️ AJUSTE MANUAL DO CARANGUEJO CHORANDO (Embaixo de todos os textos)
+        float caranguejoGameOverX = 468.0f; // 468.0f deixa ele centralizado na tela de 1000 de largura
+        float caranguejoGameOverY = 500.0f; // Fica logo abaixo da linha de instrução de reiniciar
+
         Vector2 posChorando = { caranguejoGameOverX, caranguejoGameOverY }; 
         DrawTextureEx(texturasSkins[skinSelecionada][4], posChorando, 0.0f, 1.0f, WHITE);
     }
-}
 
 // Funções de ranking //
 void CarregarRecorde() {

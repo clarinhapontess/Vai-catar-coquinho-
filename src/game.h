@@ -34,6 +34,8 @@ extern float playerSpeedMultiplier;
 extern bool isPaused;
 extern bool tutorial; 
 extern bool naHistoria;
+extern bool isPaused;
+extern Font GasoekOne;
 
 // --- SISTEMA DE SKINS --- //
 extern int skinSelecionada;       // Qual skin o jogador escolheu usar (0 a 5)
