@@ -403,10 +403,15 @@ void DrawGame() {
         DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
-    const char *outinstructionText = "Pressione esc para sair";
-        int outinstFontsize = 30;
-        int instWidth = MeasureText(outinstructionText, outinstFontsize);
-        DrawText(outinstructionText, (1000 - instWidth) / 2, 0, outinstFontsize, GOLD);
+
+    if (!gameOver) {
+        float spacingRubik = 1.0f;
+        // Desenha uma sombrinha preta bem sutil por trás para garantir a leitura na água
+        DrawTextEx(Rubik, "Pressione P para pausar", (Vector2){16, 16}, 16, spacingRubik, Fade(BLACK, 0.5f));
+        // Texto principal em branco semitransparente para ficar bem discreto
+        DrawTextEx(Rubik, "Pressione P para pausar", (Vector2){15, 15}, 16, spacingRubik, Fade(RAYWHITE, 0.8f));
+    }
+
     // --- PAINEL DE GAME OVER --- //
     if (gameOver) {
        DrawGameOverScreen(score, recorde, skinSelecionada, texturasSkins);
