@@ -322,11 +322,11 @@ void DrawGame() {
         int pauseWidth = MeasureText(pauseText, pauseFontSize);
         DrawText(pauseText, (1000 - pauseWidth) / 2, 150, pauseFontSize, RED);
 
-        const char *instructionText = "Pressione P ou ESC para continuar";
+        const char *instructionText = "Pressione P para continuar";
         int instFontSize = 30;
         int instWidth = MeasureText(instructionText, instFontSize);
-        DrawText(instructionText, (1000 - instWidth) / 2, 300, instFontSize, WHITE);
-
+        DrawText(instructionText, (1000 - instWidth) / 2, 300, instFontSize, GOLD);
+      
         return;  
     }
 
@@ -377,7 +377,10 @@ void DrawGame() {
         DrawText(textoBonus, xCentralizado + 2, 564, 28, BLACK);
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
-    
+    const char *outinstructionText = "Pressione esc para sair";
+        int outinstFontsize = 30;
+        int instWidth = MeasureText(outinstructionText, outinstFontsize);
+        DrawText(outinstructionText, (1000 - instWidth) / 2, 0, outinstFontsize, GOLD);
     // --- PAINEL DE GAME OVER --- //
     if (gameOver) {
         // Fundo semitransparente cobrindo a tela
