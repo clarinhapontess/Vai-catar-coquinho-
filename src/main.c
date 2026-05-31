@@ -67,6 +67,7 @@ int main() {
     UnloadFont(GasoekOne);
     UnloadFont(Rubik);
     CloseAudioDevice();
+    UnloadFont(GasoekOne);
     CloseWindow();
     return 0;
 }

@@ -65,8 +65,9 @@ void InitGame() {
     ganhouPontos = LoadSound("assets/audio/ganhouPontos.wav");
     perdeuPontos = LoadSound("assets/audio/perdeuPontos.wav");
     morreu = LoadSound("assets/audio/morreu.wav"); 
-    maisVidas = LoadSound("assets/audio/maisVidas.wav");
-
+    if (FileExists("assets/audio/maisVidas.wav")){
+        maisVidas = LoadSound("assets/audio/maisVidas.wav");
+}
     // --- 1º CARREGA AS TEXTURAS DAS SKINS --- //
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 5; j++) {
@@ -170,8 +171,9 @@ void UpdateGame(float deltaTime) {
             // Só deixa começar se a skin selecionada estiver liberada!
             if (skinSelecionada <= maiorSkinDesbloqueada) {
                 tutorial = false;
+                if (musicaFundo.stream.buffer != NULL) {
                 PlayMusicStream(musicaFundo);
-                SeekMusicStream(musicaFundo, 7.0f); 
+                SeekMusicStream(musicaFundo, 7.0f); }
             } else {
                 PlaySound(perdeuPontos); // Som de erro ao tentar escolher trancado
             }
@@ -195,8 +197,10 @@ void UpdateGame(float deltaTime) {
         InitCocos(); 
         InitPlayer(); 
 
-        PlayMusicStream(musicaFundo); 
+    if (musicaFundo.stream.buffer != NULL) {
+        PlayMusicStream(musicaFundo);
         SeekMusicStream(musicaFundo, 7.0f);
+    }
         return;
     }
 
@@ -257,7 +261,7 @@ void UpdateGame(float deltaTime) {
                     }
                     // Água de coco //
                     else if (atual->coco.type == 3) {
-                        PlaySound(maisVidas);
+                        if (maisVidas.frameCount > 0) PlaySound(maisVidas);
                         if (vidas < 3) vidas++;
                     }
 
