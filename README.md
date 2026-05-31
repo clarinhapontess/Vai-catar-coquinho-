@@ -9,8 +9,9 @@
 
 * O personagem se move para a esquerda e direita
 * Cocos caem do topo da tela
-* O jogador deve capturar os cocos corretamente
-
+* O jogador deve capturar os cocos se esquivando do lixo .
+* cada lixo capturado tira uma vida do personagem .
+* são 3 vidas 
 ### 🥥 Tipos de cocos:
 
 * **Coco normal:** +1 ponto
@@ -65,8 +66,8 @@ Depois execute com:
 > 🔗 (https://canva.link/20psjj7ozorcdjp)
 
 ### Entrega 2:
-
-> 🔗 *(Adicionar link aqui)*
+canva
+> 🔗 *(https://www.canva.com/design/DAHLRSiwNoo/AWIW877gOoll88peoI5eaQ/edit)*
 
 ## 📌 Status do projeto
 
