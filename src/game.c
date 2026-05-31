@@ -41,6 +41,9 @@ float cocoSpeedMultiplier = 1.0f;
 extern bool naHistoria;
 bool naCapa = true; // O jogo começa na capa!
 
+//variáveis da funcionalidade de mutar jogo 
+bool isMuted = false;
+float volumeAnterior = 0.5f;
 // --- SISTEMA GLOBAL DE SKINS --- //
 int skinSelecionada = 0;
 int maiorSkinDesbloqueada = 0;
@@ -55,7 +58,24 @@ int cocosAdicionados = 2;
 void DrawTutorial();
 void CarregarRecorde();
 void SalvarRecorde();
-
+//função de mutar volume 
+void ToggleMute() {
+    isMuted = !isMuted;
+    //quando a função togle é chamada , isMuted recebe o valor booleano oposto do que ele já é 
+    if (isMuted) {
+        SetMusicVolume(musicaFundo, 0.0f);
+        SetSoundVolume(ganhouPontos, 0.0f);
+        SetSoundVolume(perdeuPontos, 0.0f);
+        SetSoundVolume(morreu, 0.0f);
+        SetSoundVolume(maisVidas, 0.0f);
+    } else {
+        SetMusicVolume(musicaFundo, volumeAnterior);
+        SetSoundVolume(ganhouPontos, 1.0f);
+        SetSoundVolume(perdeuPontos, 1.0f);
+        SetSoundVolume(morreu, 1.0f);
+        SetSoundVolume(maisVidas, 1.0f);
+    }
+}
 // Inicialização do jogo (carrega texturas, sons, configurações iniciais) //
 void InitGame() {
     InitAudioDevice();
@@ -418,11 +438,6 @@ void DrawGame() {
     }
 } // 👈 Chave adicionada aqui para fechar a DrawGame() corretamente!
 
-// Desenho do tutorial e Seletor //
-void DrawTutorial() {
-    DrawTutorialScreen(skinSelecionada, maiorSkinDesbloqueada, texturasSkins, nomesSkins, mar1Texture, mar2Texture, areiaTexture, coqueirosTexture);
-}
-
 // Funções de ranking //
 void CarregarRecorde() {
     FILE *arquivo = fopen("recorde.txt", "r");
@@ -436,4 +451,9 @@ void SalvarRecorde() {
     if (arquivo == NULL) return;
     fprintf(arquivo, "%d\n", recorde);
     fclose(arquivo);
+}
+
+// Desenho do tutorial e Seletor //
+void DrawTutorial() {
+    DrawTutorialScreen(skinSelecionada, maiorSkinDesbloqueada, texturasSkins, nomesSkins, mar1Texture, mar2Texture, areiaTexture, coqueirosTexture);
 }

@@ -119,7 +119,7 @@ void Updatecoco(float deltaTime) {
         atual->coco.y += atual->coco.speed * cocoSpeedMultiplier;
 
         // Respawn quando sai da tela
-        if (atual->coco.y > 650) {
+        if (atual->coco.y > (GetScreenHeight()+50)) {
             spawnAreas[atual->coco.row][atual->coco.col] = 0;
 
             int linha, coluna;

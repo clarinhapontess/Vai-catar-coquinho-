@@ -38,7 +38,7 @@ int main() {
     InitScreens();
 
     while (!WindowShouldClose()) {
-        if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_ESCAPE)) {
+        if (!tutorial && !gameOver && (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_ESCAPE))) {
             isPaused = !isPaused;
             if (isPaused) {
                 PauseMusicStream(musicaFundo);
@@ -46,25 +46,24 @@ int main() {
                 ResumeMusicStream(musicaFundo);
             }
         }
-
+        if (IsKeyPressed(KEY_M)) {
+            ToggleMute();
+        }
         float deltaTime = GetFrameTime();
         UpdateGame(deltaTime);
 
         BeginDrawing();
             DrawGame();
         EndDrawing();
+       
     }
-
     // Finalizações e descarregamento
     UnloadMusicStream(musicaFundo);
     UnloadSound(ganhouPontos);
     UnloadSound(perdeuPontos);
     UnloadSound(morreu);
     UnloadSound(maisVidas);
-    
     UnloadScreens();
-
-    UnloadFont(GasoekOne);
     UnloadFont(Rubik);
     CloseAudioDevice();
     UnloadFont(GasoekOne);

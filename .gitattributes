@@ -1,0 +1,4 @@
+
+# Crie um arquivo chamado .gitattributes na raiz do projeto com esse conteúdo:
+* text=auto
+# Isso diz ao Git para gerenciar os finais de linha automaticamente de forma consistente para todos os arquivos do projeto, e o aviso para de aparecer.
