@@ -37,11 +37,6 @@ extern bool naHistoria;
 extern bool isPaused;
 extern Font GasoekOne;
 
-// --- SISTEMA DE SKINS --- //
-extern int skinSelecionada;       // Qual skin o jogador escolheu usar (0 a 5)
-extern int maiorSkinDesbloqueada; // O teto de skins liberadas pelo recorde histórico
-extern Texture2D texturasSkins[6][5]; // Tabela organizadora [6 skins] [5 imagens por skin]
-
 // Funções //
 void InitGame();
 void UpdateGame(float deltaTime);

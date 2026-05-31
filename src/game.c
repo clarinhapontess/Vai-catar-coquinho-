@@ -9,6 +9,8 @@
 #include "screens.h"
 
 // Ranking //
+extern Font GasoekOne;
+extern Font Rubik;
 int recorde = 0;
 
 // Texturas do background //
@@ -41,6 +43,7 @@ extern bool naHistoria;
 // --- SISTEMA GLOBAL DE SKINS --- //
 int skinSelecionada = 0;
 int maiorSkinDesbloqueada = 0;
+bool temSkinNova = false;
 Texture2D texturasSkins[6][5];
 const char* nomesSkins[6] = { "player", "maria", "gaiamum", "pirata", "robo", "chico" };
 
@@ -487,7 +490,13 @@ void DrawTutorial() {
     // Fundo branco semitransparente atrás do texto //
     DrawRectangle(100, 30, 800, 540, Fade(WHITE, 0.75f));
 
-    DrawText("VAI CATAR COQUINHO", 1000/2 - MeasureText("VAI CATAR COQUINHO", 50)/2, 45, 50, DARKGREEN);
+    // --- MUDANÇA APENAS DE FONTE (USANDO GASOEKONE NOS TÍTULOS E BOTÕES) --- //
+    const char *tituloTexto = "VAI CATAR COQUINHO";
+    float tituloSize = 46.0f;
+    Vector2 tituloMedidas = MeasureTextEx(GasoekOne, tituloTexto, tituloSize, 1.0f);
+    DrawTextEx(GasoekOne, tituloTexto, (Vector2){(1000 - tituloMedidas.x)/2, 45}, tituloSize, 1.0f, DARKGREEN);
+
+    // Textos informativos menores permanecem legíveis com fonte padrão limpa
     DrawText("Como jogar:", 1000/2 - MeasureText("Como jogar:", 26)/2, 115, 26, BLACK);
     DrawText("Use as setas <- -> para mover o caranguejo", 1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 22)/2, 150, 22, BLACK);
     
@@ -497,23 +506,18 @@ void DrawTutorial() {
     DrawText("Agua de coco: +1 vida", 1000/2 - MeasureText("Agua de coco: +1 vida", 22)/2, 280, 22, BLUE);
     DrawText("Lixo: -1 vida", 1000/2 - MeasureText("Lixo: -1 vida", 22)/2, 305, 22, RED);
     
-    // --- EXIBIÇÃO DA SKIN SELECIONADA (AJUSTE MANUAL DA POSIÇÃO) --- //
+    // --- EXIBIÇÃO DA SKIN SELECIONADA --- //
     const char *instrucaoSkin = "Escolha seu Visual (Setas de CIMA / BAIXO):";
     DrawText(instrucaoSkin, 1000/2 - MeasureText(instrucaoSkin, 24)/2, 345, 24, BLACK);
     
-    // 🛠️ COLOQUE AQUI A POSIÇÃO QUE VOCÊ QUISER PARA O CARANGUEJO DO MENU:
-    // (468.0f e 395.0f são os valores perfeitos para o centro)
-    float skinMenuX = 435.0f; // Aumente para ir para a direita, diminua para ir para a esquerda
-    float skinMenuY = 360.0f; // Aumente para ir para baixo, diminua para ir para cima
+    float skinMenuX = 435.0f; 
+    float skinMenuY = 360.0f; 
     
     bool estaBloqueada = (skinSelecionada > maiorSkinDesbloqueada);
 
     if (estaBloqueada) {
-        // Desenha o caranguejo escuro (GRAY) usando as posições manuais
         DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, GRAY);
-        
     } else {
-        // Desenha normal e colorido usando as posições manuais
         DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, WHITE);
     }
 
@@ -526,5 +530,9 @@ void DrawTutorial() {
         DrawText(textoSkin, 1000/2 - MeasureText(textoSkin, 24)/2, 480, 24, ORANGE);
     }
 
-    DrawText("Pressione ENTER para comecar!", 1000/2 - MeasureText("Pressione ENTER para comecar!", 26)/2, 530, 26, DARKBLUE);
+    // Botão de Iniciar usando a GasoekOne
+    const char *botaoTexto = "Pressione ENTER para comecar!";
+    float botaoSize = 24.0f;
+    Vector2 botaoMedidas = MeasureTextEx(GasoekOne, botaoTexto, botaoSize, 1.0f);
+    DrawTextEx(GasoekOne, botaoTexto, (Vector2){(1000 - botaoMedidas.x)/2, 530}, botaoSize, 1.0f, DARKBLUE);
 }

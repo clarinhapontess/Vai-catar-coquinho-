@@ -2,13 +2,19 @@
 #include "raylib.h"
 #include "game.h" 
 #include <stdio.h>
+#include <math.h>
 
 int paginaAtual = 0;
 bool naHistoria = true;
+extern bool temSkinNova; 
 
 Texture2D historia1Texture;
 Texture2D historia2Texture;
 Texture2D historia3Texture;
+
+// Avisa o arquivo que as fontes já foram criadas no main.c
+extern Font GasoekOne;
+extern Font Rubik;
 
 void InitScreens() {
     // Carrega as 3 cenas oficiais da história //
@@ -29,18 +35,14 @@ void UnloadScreens() {
 void UpdateHistory() {
     if (!naHistoria) return;
 
-    // Se apertar a seta para a direita ou ENTER, avança a página //
     if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_ENTER)) {
         paginaAtual++;
-        
-        // Se passou da página 3 (índice 2), fecha a história e liga o tutorial //
         if (paginaAtual > 2) {
             naHistoria = false;
             tutorial = true; 
         }
     }
     
-    // Opcional: Permite voltar a página com a seta para a esquerda //
     if (IsKeyPressed(KEY_LEFT) && paginaAtual > 0) {
         paginaAtual--;
     }
@@ -49,59 +51,216 @@ void UpdateHistory() {
 void DrawHistory() {
     if (!naHistoria) return;
 
-    // 1. Desenha a imagem de fundo da cena atual (que já tem o retângulo colorido integrado) //
     if (paginaAtual == 0) DrawTexture(historia1Texture, 0, 0, WHITE);
     else if (paginaAtual == 1) DrawTexture(historia2Texture, 0, 0, WHITE);
     else if (paginaAtual == 2) DrawTexture(historia3Texture, 0, 0, WHITE);
 
-    // --- TEXTOS DA HISTORINHA DENTRO DO RETÂNGULO DA ESQUERDA (X: 30 a 320) --- //
-    // Como o texto é longo, dividimos em parágrafos manuais para caber perfeitamente no bloco colorido.
+    float spacing = 1.0f;
 
     if (paginaAtual == 0) {
-        DrawText("O Império de", 35, 60, 36, RAYWHITE);
-        DrawText("Crabisson", 35, 105, 42, GOLD);
+        DrawTextEx(GasoekOne, "O Império de", (Vector2){35, 60}, 36, spacing, RAYWHITE);
+        DrawTextEx(GasoekOne, "Crabisson", (Vector2){35, 105}, 42, spacing, GOLD);
 
-        DrawText("Crabisson passou a", 35, 190, 24, RAYWHITE);
-        DrawText("noite inteira organizando", 35, 225, 24, RAYWHITE);
-        DrawText("o estoque do quiosque.", 35, 260, 24, RAYWHITE);
+        DrawTextEx(Rubik, "Crabisson passou a", (Vector2){35, 190}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "noite inteira organizando", (Vector2){35, 225}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "o estoque do quiosque.", (Vector2){35, 260}, 24, spacing, RAYWHITE);
 
-        DrawText("Ele estava se sentindo", 35, 320, 24, RAYWHITE);
-        DrawText("o rei do coco verde,", 35, 355, 24, RAYWHITE);
-        DrawText("pronto para ficar", 35, 390, 24, RAYWHITE);
-        DrawText("milionário na praia!", 35, 425, 24, RAYWHITE);
+        DrawTextEx(Rubik, "Ele estava se sentindo", (Vector2){35, 320}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "o rei do coco verde,", (Vector2){35, 355}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "pronto para ficar", (Vector2){35, 390}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "milionário na praia!", (Vector2){35, 425}, 24, spacing, RAYWHITE);
     } 
     else if (paginaAtual == 1) {
-        DrawText("O Arrastão", 35, 60, 38, RAYWHITE);
-        DrawText("da Gangue", 35, 105, 38, RAYWHITE);
+        DrawTextEx(GasoekOne, "O Arrastão", (Vector2){35, 60}, 38, spacing, RAYWHITE);
+        DrawTextEx(GasoekOne, "da Gangue", (Vector2){35, 105}, 38, spacing, RAYWHITE);
 
-        DrawText("Do nada, a Máfia das", 35, 180, 24, RAYWHITE);
-        DrawText("Gaivotas desceu em", 35, 215, 24, RAYWHITE);
-        DrawText("bando e fez um", 35, 250, 24, RAYWHITE);
-        DrawText("arrastão violento!", 35, 285, 24, RAYWHITE);
+        DrawTextEx(Rubik, "Do nada, a Máfia das", (Vector2){35, 180}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "Gaivotas desceu em", (Vector2){35, 215}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "bando e fez um", (Vector2){35, 250}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "arrastão violento!", (Vector2){35, 285}, 24, spacing, RAYWHITE);
 
-        DrawText("Mas como gaivota é", 35, 345, 24, RAYWHITE);
-        DrawText("bicho burro, elas", 35, 380, 24, RAYWHITE);
-        DrawText("roubaram tudo: os", 35, 415, 24, RAYWHITE);
-        DrawText("cocos e os lixos", 35, 450, 24, RAYWHITE);
-        DrawText("jogados pela praia.", 35, 485, 24, RAYWHITE);
+        DrawTextEx(Rubik, "Mas como gaivota é", (Vector2){35, 345}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "bicho burro, elas", (Vector2){35, 380}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "roubaram tudo: os", (Vector2){35, 415}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "cocos e os lixos", (Vector2){35, 450}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "jogados pela praia.", (Vector2){35, 485}, 24, spacing, RAYWHITE);
     } 
     else if (paginaAtual == 2) {
-        DrawText("Chuva de", 35, 60, 38, RAYWHITE);
-        DrawText("Cocos!", 35, 105, 38, RAYWHITE);
+        DrawTextEx(GasoekOne, "Chuva de", (Vector2){35, 60}, 38, spacing, RAYWHITE);
+        DrawTextEx(GasoekOne, "Cocos!", (Vector2){35, 105}, 38, spacing, RAYWHITE);
 
-        DrawText("Lá no alto, o bando", 35, 180, 24, RAYWHITE);
-        DrawText("percebeu que a carga", 35, 215, 24, RAYWHITE);
-        DrawText("estava pesada demais.", 35, 250, 24, RAYWHITE);
+        DrawTextEx(Rubik, "Lá no alto, o bando", (Vector2){35, 180}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "percebeu que a carga", (Vector2){35, 215}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "estava pesada demais.", (Vector2){35, 250}, 24, spacing, RAYWHITE);
 
-        DrawText("Em pânico, começaram", 35, 310, 24, RAYWHITE);
-        DrawText("a jogar tudo de volta!", 35, 345, 24, RAYWHITE);
+        DrawTextEx(Rubik, "Em pânico, começaram", (Vector2){35, 310}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "a jogar tudo de volta!", (Vector2){35, 345}, 24, spacing, RAYWHITE);
 
-        DrawText("Ajude Crabisson a", 35, 405, 24, YELLOW);
-        DrawText("recuperar os cocos,", 35, 440, 24, YELLOW);
-        DrawText("mas cuidado com", 35, 475, 24, RAYWHITE);
-        DrawText("o lixo caindo!", 35, 510, 24, RED);
+        DrawTextEx(Rubik, "Ajude Crabisson a", (Vector2){35, 405}, 24, spacing, YELLOW);
+        DrawTextEx(Rubik, "recuperar os cocos,", (Vector2){35, 440}, 24, spacing, YELLOW);
+        DrawTextEx(Rubik, "mas cuidado com", (Vector2){35, 475}, 24, spacing, RAYWHITE);
+        DrawTextEx(Rubik, "o lixo caindo!", (Vector2){35, 510}, 24, spacing, RED);
     }
 
-    // Indicador sutil de navegação na parte inferior do bloco de texto //
-    DrawText("Aperte a Seta Direita ->", 45, 560, 20, RAYWHITE);
+    DrawTextEx(Rubik, "Aperte a Seta Direita ->", (Vector2){45, 560}, 20, spacing, RAYWHITE);
+}
+
+void DrawTutorialScreen(int skinSelecionada, int maiorSkinDesbloqueada, Texture2D texturasSkins[6][5], const char* nomesSkins[6], Texture2D mar1Texture, Texture2D mar2Texture, Texture2D areiaTexture, Texture2D coqueirosTexture) {
+    ClearBackground((Color){154, 244, 255, 255});
+
+    float tempoAtual = GetTime();
+    int waveOffset1 = sinf(tempoAtual * 1.5f) * 8;
+    DrawTexture(mar1Texture, 0, waveOffset1, WHITE);
+    int waveOffset2 = sinf((tempoAtual * 1.5f) + 1.0f) * 8;
+    DrawTexture(mar2Texture, 0, waveOffset2, WHITE);
+    DrawTexture(areiaTexture, 0, 0, WHITE);
+    DrawTexture(coqueirosTexture, 0, 0, WHITE);
+
+    DrawRectangle(100, 30, 800, 540, Fade(WHITE, 0.75f));
+
+    // Título Principal
+    const char *tituloTexto = "VAI CATAR COQUINHO";
+    float tituloSize = 46.0f;
+    Vector2 tituloMedidas = MeasureTextEx(GasoekOne, tituloTexto, tituloSize, 1.0f);
+    DrawTextEx(GasoekOne, tituloTexto, (Vector2){(1000 - tituloMedidas.x)/2, 45}, tituloSize, 1.0f, DARKGREEN);
+
+    // Menu Alinhado
+    const char *comoJogar = "Como jogar:";
+    Vector2 sizeComoJogar = MeasureTextEx(Rubik, comoJogar, 26, 1.0f);
+    DrawTextEx(Rubik, comoJogar, (Vector2){500 - sizeComoJogar.x/2, 115}, 26, 1.0f, BLACK);
+
+    const char *instrucaoMover = "Use as setas <- -> para mover o caranguejo";
+    Vector2 sizeInstrucaoMover = MeasureTextEx(Rubik, instrucaoMover, 22, 1.0f);
+    DrawTextEx(Rubik, instrucaoMover, (Vector2){500 - sizeInstrucaoMover.x/2, 150}, 22, 1.0f, BLACK);
+    
+    const char *tiposItens = "Tipos de itens:";
+    Vector2 sizeTiposItens = MeasureTextEx(Rubik, tiposItens, 26, 1.0f);
+    DrawTextEx(Rubik, tiposItens, (Vector2){500 - sizeTiposItens.x/2, 195}, 26, 1.0f, BLACK);
+
+    const char *itemVerde = "Coco verde: +1 ponto";
+    Vector2 sizeItemVerde = MeasureTextEx(Rubik, itemVerde, 22, 1.0f);
+    DrawTextEx(Rubik, itemVerde, (Vector2){500 - sizeItemVerde.x/2, 230}, 22, 1.0f, DARKGREEN);
+
+    const char *itemDourado = "Coco dourado: dobra os pontos por 20 segundos!";
+    Vector2 sizeItemDourado = MeasureTextEx(Rubik, itemDourado, 22, 1.0f);
+    DrawTextEx(Rubik, itemDourado, (Vector2){500 - sizeItemDourado.x/2, 255}, 22, 1.0f, GOLD);
+
+    const char *itemAgua = "Agua de coco: +1 vida";
+    Vector2 sizeItemAgua = MeasureTextEx(Rubik, itemAgua, 22, 1.0f);
+    DrawTextEx(Rubik, itemAgua, (Vector2){500 - sizeItemAgua.x/2, 280}, 22, 1.0f, BLUE);
+
+    const char *itemLixo = "Lixo: -1 vida";
+    Vector2 sizeItemLixo = MeasureTextEx(Rubik, itemLixo, 22, 1.0f);
+    DrawTextEx(Rubik, itemLixo, (Vector2){500 - sizeItemLixo.x/2, 305}, 22, 1.0f, RED);
+    
+    const char *instrucaoSkin = "Escolha seu Visual (Setas de CIMA / BAIXO):";
+    Vector2 sizeInstrucaoSkin = MeasureTextEx(Rubik, instrucaoSkin, 24, 1.0f);
+    DrawTextEx(Rubik, instrucaoSkin, (Vector2){500 - sizeInstrucaoSkin.x/2, 345}, 24, 1.0f, BLACK);
+    
+    float skinMenuX = 450.0f; // Ajustado para centralizar o sprite de 100px em tela de 1000px
+    float skinMenuY = 380.0f; 
+    bool estaBloqueada = (skinSelecionada > maiorSkinDesbloqueada);
+
+    if (estaBloqueada) {
+        DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, GRAY);
+    } else {
+        DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, WHITE);
+    }
+
+    char textoSkin[60];
+    if (estaBloqueada) {
+        sprintf(textoSkin, "< %s (Bloqueado) >", nomesSkins[skinSelecionada]);
+        Vector2 sizeTextoSkin = MeasureTextEx(Rubik, textoSkin, 24, 1.0f);
+        DrawTextEx(Rubik, textoSkin, (Vector2){500 - sizeTextoSkin.x/2, 490}, 24, 1.0f, RED);
+    } else {
+        sprintf(textoSkin, "< Skin: %s >", nomesSkins[skinSelecionada]);
+        Vector2 sizeTextoSkin = MeasureTextEx(Rubik, textoSkin, 24, 1.0f);
+        DrawTextEx(Rubik, textoSkin, (Vector2){500 - sizeTextoSkin.x/2, 490}, 24, 1.0f, ORANGE);
+
+        if (temSkinNova && skinSelecionada == maiorSkinDesbloqueada) {
+            float pisca = sinf(GetTime() * 8.0f); 
+            if (pisca > 0.0f) {
+                const char* textoNovo = "[ NOVO DESBLOQUEIO! ]";
+                Vector2 sizeNovo = MeasureTextEx(Rubik, textoNovo, 20, 1.0f);
+                DrawTextEx(Rubik, textoNovo, (Vector2){500 - sizeNovo.x/2, 462}, 20, 1.0f, LIME);
+            }
+        }
+    }
+
+    const char *botaoTexto = "Pressione ENTER para comecar!";
+    float botaoSize = 24.0f;
+    Vector2 botaoMedidas = MeasureTextEx(GasoekOne, botaoTexto, botaoSize, 1.0f);
+    DrawTextEx(GasoekOne, botaoTexto, (Vector2){(1000 - botaoMedidas.x)/2, 530}, botaoSize, 1.0f, DARKBLUE);
+}
+
+void DrawGameOverScreen(int score, int recorde, int skinSelecionada, Texture2D texturasSkins[6][5]) {
+    DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
+
+    float gameOverFontSize = 120.0f;           
+    float scoreFontSize = 84.0f;               
+    float recordeFontSize = 60.0f;             
+    float instructionFontSize = 35.0f;         
+
+    float gameOverSpacing = 1.2f;
+    float scoreSpacing = 1.0f;
+    float recordeSpacing = 0.9f;
+    float instructionSpacing = 0.75f;
+
+    const char *gameOverText = "GAME OVER";
+    char scoreText[50];
+    sprintf(scoreText, "Score final: %d", score);
+    char recordeText[50];
+    sprintf(recordeText, "Maior Recorde: %d", recorde);
+    const char *instructionText = "Pressione ENTER para reiniciar!";
+
+    Vector2 gameOverSize = MeasureTextEx(GasoekOne, gameOverText, gameOverFontSize, gameOverSpacing);
+    Vector2 scoreSize = MeasureTextEx(GasoekOne, scoreText, scoreFontSize, scoreSpacing);
+    Vector2 recordeSize = MeasureTextEx(GasoekOne, recordeText, recordeFontSize, recordeSpacing);
+    Vector2 instructionSize = MeasureTextEx(GasoekOne, instructionText, instructionFontSize, instructionSpacing);
+
+    Vector2 gameOverPos = { (1000 - gameOverSize.x) / 2.0f, 40.0f };
+    Vector2 scorePos    = { (1000 - scoreSize.x) / 2.0f, 170.0f };
+    Vector2 recordePos  = { (1000 - recordeSize.x) / 2.0f, 270.0f };
+    Vector2 instructionPos = { (1000 - instructionSize.x) / 2.0f, 380.0f };
+
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) {
+                DrawTextEx(GasoekOne, gameOverText, (Vector2){gameOverPos.x + dx, gameOverPos.y + dy}, gameOverFontSize, gameOverSpacing, BLACK);
+            }
+        }
+    }
+    DrawTextEx(GasoekOne, gameOverText, gameOverPos, gameOverFontSize, gameOverSpacing, GOLD);
+
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) {
+                DrawTextEx(GasoekOne, scoreText, (Vector2){scorePos.x + dx, scorePos.y + dy}, scoreFontSize, scoreSpacing, BLACK);
+            }
+        }
+    }
+    DrawTextEx(GasoekOne, scoreText, scorePos, scoreFontSize, scoreSpacing, WHITE);
+
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) {
+                DrawTextEx(GasoekOne, recordeText, (Vector2){recordePos.x + dx, recordePos.y + dy}, recordeFontSize, recordeSpacing, BLACK);
+            }
+        }
+    }
+    DrawTextEx(GasoekOne, recordeText, recordePos, recordeFontSize, recordeSpacing, RED);
+
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) {
+                DrawTextEx(GasoekOne, instructionText, (Vector2){instructionPos.x + dx, instructionPos.y + dy}, instructionFontSize, instructionSpacing, BLACK);
+            }
+        }
+    }
+    DrawTextEx(GasoekOne, instructionText, instructionPos, instructionFontSize, instructionSpacing, WHITE);
+
+    float caranguejoGameOverX = 450.0f; 
+    float caranguejoGameOverY = 460.0f; 
+    Vector2 posChorando = { caranguejoGameOverX, caranguejoGameOverY }; 
+    DrawTextureEx(texturasSkins[skinSelecionada][4], posChorando, 0.0f, 1.0f, WHITE);
 }

@@ -46,7 +46,7 @@ void DrawPlayer() {
     extern int skinSelecionada;
     extern Texture2D texturasSkins[6][5];
 
-    // Mapeamento das suas 5 versões de imagem por skin:
+    // Mapeamento das 5 versões de imagem por skin:
     // índice 0 -> nome1.png (Normal - usada no tutorial)
     // índice 1 -> nome2.png (Normal com Cestinha)
     // índice 2 -> nome3.png (Machucado 1)

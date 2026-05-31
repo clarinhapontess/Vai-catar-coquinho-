@@ -5,31 +5,45 @@
 #include "player.h"
 #include "screens.h"
 
-// ✅ Declarar como global
+// Criação e alocação real das fontes globais
 Font GasoekOne;
+Font Rubik;
 
 int main() {    
     InitWindow(1000, 600, "Vai Catar Coquinho");
     SetTargetFPS(60);
     
-    // ✅ Carregar a fonte
-    GasoekOne = LoadFont("GasoekOne-Regular.ttf");
-    if (GasoekOne.texture.id == 0) {
-        TraceLog(LOG_WARNING, "Fonte GasoekOne não carregada!");
-        GasoekOne = GetFontDefault();
-    }
+    // Lista unificada de acentos e caracteres
+    const char *caracteresSuportados = 
+        "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "0123456789.,!?-+=_();:<> /"
+        "áàâãéèêíïóòôõúüçÁÀÂÃÉÈÊÍÏÓÒÔÕÚÜÇ";
+
+    int contagemCodepoints = 0;
+    int *codepoints = LoadCodepoints(caracteresSuportados, &contagemCodepoints);
     
+    // Carrega as duas fontes do jeito certo com suporte a acentos
+    GasoekOne = LoadFontEx("assets/fonts/GasoekOne-Regular.ttf", 64, codepoints, contagemCodepoints);
+    Rubik = LoadFontEx("assets/fonts/Rubik-Bold.ttf", 48, codepoints, contagemCodepoints);
+    
+    UnloadCodepoints(codepoints);
+
+    // Proteção caso as fontes sumam da pasta
+    if (GasoekOne.texture.id == 0) GasoekOne = GetFontDefault();
+    if (Rubik.texture.id == 0) Rubik = GetFontDefault();
+    
+    // Inicializa o jogo e as telas da história
     InitGame();
+    InitScreens();
 
     while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_ESCAPE)) {
             isPaused = !isPaused;
             if (isPaused) {
                 PauseMusicStream(musicaFundo);
-                TraceLog(LOG_INFO, "Jogo pausado");
             } else {
                 ResumeMusicStream(musicaFundo);
-                TraceLog(LOG_INFO, "Jogo retomado");
             }
         }
 
@@ -41,12 +55,17 @@ int main() {
         EndDrawing();
     }
 
+    // Finalizações e descarregamento
     UnloadMusicStream(musicaFundo);
     UnloadSound(ganhouPontos);
     UnloadSound(perdeuPontos);
     UnloadSound(morreu);
     UnloadSound(maisVidas);
+    
+    UnloadScreens();
+
     UnloadFont(GasoekOne);
+    UnloadFont(Rubik);
     CloseAudioDevice();
     CloseWindow();
     return 0;

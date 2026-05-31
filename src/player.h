@@ -14,6 +14,7 @@ typedef struct {
 void InitPlayer();
 void UpdatePlayer(float deltaTime);
 void DrawPlayer();
+extern bool temSkinNova; // Avisa se há uma skin nova não visualizada
 
 extern Player player; // -> Permite que outros arquivos usem: player.x, player.y, player.speed //
 
