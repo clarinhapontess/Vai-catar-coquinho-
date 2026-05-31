@@ -19,7 +19,7 @@ void InitPlayer() {
 void UpdatePlayer(float deltaTime) {
     extern float playerSpeedMultiplier; // vai multiplicar a velocidade base por esse
     
-    float baseSpeed = 300.0f;  // Velocidade base
+    float baseSpeed = 230.0f;  // Velocidade base
     float speedAtual = baseSpeed * playerSpeedMultiplier;
     
     // tecla para movimentar o jogador para a esquerda

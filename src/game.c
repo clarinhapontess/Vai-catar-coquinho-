@@ -49,6 +49,8 @@ int cocosAdicionados = 2;
 
 // Protótipos das funções de ranking e interface //
 void DrawTutorial();
+void CarregarRecorde();
+void SalvarRecorde();
 
 // Inicialização do jogo (carrega texturas, sons, configurações iniciais) //
 void InitGame() {
@@ -109,25 +111,33 @@ void UpdateGameProgression(float deltaTime) {
     extern void AddCoco(); 
     
     // Sistema de progressão da branch danda //
-    if (score >= 30 && cocosAdicionados == 2) {
+    if (score >= 10 && cocosAdicionados == 2) {
         AddCoco();
         cocosAdicionados = 3;
-    } else if (score >= 50 && cocosAdicionados == 3) {
+    } else if (score >= 25 && cocosAdicionados == 3) {
         AddCoco();
         cocosAdicionados = 4;
-    } else if (score >= 100 && cocosAdicionados == 4) {
+    } else if (score >= 50 && cocosAdicionados == 4) {
         AddCoco();
+        cocosAdicionados = 5;
+    } else if (score >= 80 && cocosAdicionados == 5) {
         AddCoco();
         cocosAdicionados = 6;
+    } else if (score >= 120 && cocosAdicionados == 6) {
+        AddCoco();
+        cocosAdicionados = 7;
+    } else if (score >= 200 && cocosAdicionados == 7) {
+        AddCoco();
+        cocosAdicionados = 8;
     }
 
     // Player fica mais lento ao perder vidas //
     switch (vidas) {
         case 2:
-            playerSpeedMultiplier = 0.6f; 
+            playerSpeedMultiplier = 0.65f; 
             break;
         case 1:
-            playerSpeedMultiplier = 0.4f; 
+            playerSpeedMultiplier = 0.50f; 
             break;
         default:
             playerSpeedMultiplier = 1.0f; 
@@ -143,20 +153,25 @@ void UpdateGame(float deltaTime) {
     }  
     
     if (tutorial) {
-        // Seleção de skins liberadas usando as setas CIMA e BAIXO
+        // Seleção de skins (Navega por TODAS as 6 skins para exibir o cadeado)
         if (IsKeyPressed(KEY_UP)) {
             skinSelecionada++;
-            if (skinSelecionada > maiorSkinDesbloqueada) skinSelecionada = 0;
+            if (skinSelecionada > 5) skinSelecionada = 0;
         }
         if (IsKeyPressed(KEY_DOWN)) {
             skinSelecionada--;
-            if (skinSelecionada < 0) skinSelecionada = maiorSkinDesbloqueada;
+            if (skinSelecionada < 0) skinSelecionada = 5;
         }
 
         if (IsKeyPressed(KEY_ENTER)) {
-            tutorial = false;
-            PlayMusicStream(musicaFundo);
-            SeekMusicStream(musicaFundo, 7.0f); 
+            // Só deixa começar se a skin selecionada estiver liberada!
+            if (skinSelecionada <= maiorSkinDesbloqueada) {
+                tutorial = false;
+                PlayMusicStream(musicaFundo);
+                SeekMusicStream(musicaFundo, 7.0f); 
+            } else {
+                PlaySound(perdeuPontos); // Som de erro ao tentar escolher trancado
+            }
         }
         return;  
     }
@@ -227,9 +242,9 @@ void UpdateGame(float deltaTime) {
                     // Lixo //
                     else if (atual->coco.type == 1) {
                         PlaySound(perdeuPontos);
-                        score -= 1;
-                        if (score < 0) score = 0;
-                        if (!bonusDourado) vidas--; 
+                        if (vidas > 0) vidas--;
+                        bonusDourado = false;
+
                     }
                     // Coco dourado //
                     else if (atual->coco.type == 2) {
@@ -356,7 +371,7 @@ void DrawGame() {
         DrawText(textoBonus, xCentralizado, 562, 28, corBrilho);
     }
     
-// --- PAINEL DE GAME OVER --- //
+    // --- PAINEL DE GAME OVER --- //
     if (gameOver) {
         // Fundo semitransparente cobrindo a tela
         DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
@@ -378,7 +393,7 @@ void DrawGame() {
         char scoreText[50];
         sprintf(scoreText, "Score final: %d", score);
         char recordeText[50];
-        sprintf(recordeText, "Recorde Máximo: %d", recorde);
+        sprintf(recordeText, "Maior Recorde: %d", recorde);
         const char *instructionText = "Pressione ENTER para reiniciar!";
 
         // Medir tamanhos exatos com DrawTextEx
@@ -434,12 +449,13 @@ void DrawGame() {
         DrawTextEx(GasoekOne, instructionText, instructionPos, instructionFontSize, instructionSpacing, WHITE);
 
         // 🛠️ AJUSTE MANUAL DO CARANGUEJO CHORANDO (Embaixo de todos os textos)
-        float caranguejoGameOverX = 468.0f; // 468.0f deixa ele centralizado na tela de 1000 de largura
-        float caranguejoGameOverY = 500.0f; // Fica logo abaixo da linha de instrução de reiniciar
+        float caranguejoGameOverX = 468.0f; 
+        float caranguejoGameOverY = 500.0f; 
 
         Vector2 posChorando = { caranguejoGameOverX, caranguejoGameOverY }; 
         DrawTextureEx(texturasSkins[skinSelecionada][4], posChorando, 0.0f, 1.0f, WHITE);
     }
+}
 
 // Funções de ranking //
 void CarregarRecorde() {
@@ -481,18 +497,34 @@ void DrawTutorial() {
     DrawText("Agua de coco: +1 vida", 1000/2 - MeasureText("Agua de coco: +1 vida", 22)/2, 280, 22, BLUE);
     DrawText("Lixo: -1 vida", 1000/2 - MeasureText("Lixo: -1 vida", 22)/2, 305, 22, RED);
     
-    // --- EXIBIÇÃO DA SKIN SELECIONADA (AJUSTADO) --- //
-    DrawText("Escolha seu Visual (Setas de CIMA / BAIXO):", 1000/2 - MeasureText("Escolha seu Visual (Setas de CIMA / BAIXO):", 24)/2, 345, 24, BLACK);
+    // --- EXIBIÇÃO DA SKIN SELECIONADA (AJUSTE MANUAL DA POSIÇÃO) --- //
+    const char *instrucaoSkin = "Escolha seu Visual (Setas de CIMA / BAIXO):";
+    DrawText(instrucaoSkin, 1000/2 - MeasureText(instrucaoSkin, 24)/2, 345, 24, BLACK);
     
-    // Subi um pouco o Y para 370 e centralizei baseado no tamanho 64x64
-    Vector2 posSkinMenu = { (1000 / 2) - 60, 370 };
+    // 🛠️ COLOQUE AQUI A POSIÇÃO QUE VOCÊ QUISER PARA O CARANGUEJO DO MENU:
+    // (468.0f e 395.0f são os valores perfeitos para o centro)
+    float skinMenuX = 435.0f; // Aumente para ir para a direita, diminua para ir para a esquerda
+    float skinMenuY = 360.0f; // Aumente para ir para baixo, diminua para ir para cima
     
-    // Desenha com escala //
-    DrawTextureEx(texturasSkins[skinSelecionada][0], posSkinMenu, 0.0f, 1.0f, WHITE);
+    bool estaBloqueada = (skinSelecionada > maiorSkinDesbloqueada);
+
+    if (estaBloqueada) {
+        // Desenha o caranguejo escuro (GRAY) usando as posições manuais
+        DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, GRAY);
+        
+    } else {
+        // Desenha normal e colorido usando as posições manuais
+        DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, WHITE);
+    }
 
     char textoSkin[60];
-    sprintf(textoSkin, "< Skin: %s >", nomesSkins[skinSelecionada]);
-    DrawText(textoSkin, 1000/2 - MeasureText(textoSkin, 24)/2, 490, 24, ORANGE);
+    if (estaBloqueada) {
+        sprintf(textoSkin, "< %s (Bloqueado) >", nomesSkins[skinSelecionada]);
+        DrawText(textoSkin, 1000/2 - MeasureText(textoSkin, 24)/2, 480, 24, RED);
+    } else {
+        sprintf(textoSkin, "< Skin: %s >", nomesSkins[skinSelecionada]);
+        DrawText(textoSkin, 1000/2 - MeasureText(textoSkin, 24)/2, 480, 24, ORANGE);
+    }
 
     DrawText("Pressione ENTER para comecar!", 1000/2 - MeasureText("Pressione ENTER para comecar!", 26)/2, 530, 26, DARKBLUE);
 }
