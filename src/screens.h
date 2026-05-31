@@ -21,6 +21,7 @@ void InitScreens();
 void UnloadScreens();
 void UpdateHistory();
 void DrawHistory();
+void DrawCapaScreen();
 
 // Funções de interface movidas para organização //
 void DrawTutorialScreen(int skinSelecionada, int maiorSkinDesbloqueada, Texture2D texturasSkins[6][5], const char* nomesSkins[6], Texture2D mar1Texture, Texture2D mar2Texture, Texture2D areiaTexture, Texture2D coqueirosTexture);

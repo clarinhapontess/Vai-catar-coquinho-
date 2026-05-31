@@ -36,6 +36,7 @@ extern bool tutorial;
 extern bool naHistoria;
 extern bool isPaused;
 extern Font GasoekOne;
+extern bool naCapa;
 
 // Funções //
 void InitGame();

@@ -39,6 +39,7 @@ bool tutorial = true;
 float playerSpeedMultiplier = 1.0f; 
 float cocoSpeedMultiplier = 1.0f;
 extern bool naHistoria;
+bool naCapa = true; // O jogo começa na capa!
 
 // --- SISTEMA GLOBAL DE SKINS --- //
 int skinSelecionada = 0;
@@ -67,7 +68,7 @@ void InitGame() {
     morreu = LoadSound("assets/audio/morreu.wav"); 
     if (FileExists("assets/audio/maisVidas.wav")){
         maisVidas = LoadSound("assets/audio/maisVidas.wav");
-}
+    }
     // --- 1º CARREGA AS TEXTURAS DAS SKINS --- //
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 5; j++) {
@@ -151,6 +152,16 @@ void UpdateGameProgression(float deltaTime) {
 
 // Atualização do jogo //
 void UpdateGame(float deltaTime) {
+
+    //ADICIONE ESSE BLOCO AQUI NO INÍCIO:
+    if (naCapa) {
+        if (IsKeyReleased(KEY_ENTER)) {
+            naCapa = false;
+            naHistoria = true; // Avança para a história
+        }
+        return;
+    }
+
     if (isPaused) {
         UpdateMusicStream(musicaFundo);  
         return;
@@ -172,8 +183,9 @@ void UpdateGame(float deltaTime) {
             if (skinSelecionada <= maiorSkinDesbloqueada) {
                 tutorial = false;
                 if (musicaFundo.stream.buffer != NULL) {
-                PlayMusicStream(musicaFundo);
-                SeekMusicStream(musicaFundo, 7.0f); }
+                    PlayMusicStream(musicaFundo);
+                    SeekMusicStream(musicaFundo, 7.0f); 
+                }
             } else {
                 PlaySound(perdeuPontos); // Som de erro ao tentar escolher trancado
             }
@@ -186,6 +198,7 @@ void UpdateGame(float deltaTime) {
     // Restart //
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
         gameOver = false;
+        tutorial = true;
         score = 0;
         vidas = 3;
         bonusDourado = false;
@@ -197,10 +210,10 @@ void UpdateGame(float deltaTime) {
         InitCocos(); 
         InitPlayer(); 
 
-    if (musicaFundo.stream.buffer != NULL) {
-        PlayMusicStream(musicaFundo);
-        SeekMusicStream(musicaFundo, 7.0f);
-    }
+        if (musicaFundo.stream.buffer != NULL) {
+            PlayMusicStream(musicaFundo);
+            SeekMusicStream(musicaFundo, 7.0f);
+        }
         return;
     }
 
@@ -251,7 +264,6 @@ void UpdateGame(float deltaTime) {
                         PlaySound(perdeuPontos);
                         if (vidas > 0) vidas--;
                         bonusDourado = false;
-
                     }
                     // Coco dourado //
                     else if (atual->coco.type == 2) {
@@ -298,6 +310,12 @@ void UpdateGame(float deltaTime) {
 
 // Desenho do jogo //
 void DrawGame() {
+
+    if (naCapa) {
+        DrawCapaScreen();
+        return;
+    }
+    
     // Tela de história (Overlay com texto e imagem) //
     if (naHistoria) {
         UpdateHistory();  
@@ -350,24 +368,32 @@ void DrawGame() {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(GOLD, 0.15f));
     }
 
-    // --- INTERFACE DE PONTUAÇÃO E VIDAS --- //
-    DrawText(TextFormat("Cocos: %i", score), 832, 559, 34, BLACK); 
-    DrawText(TextFormat("Cocos: %i", score), 830, 557, 34, RAYWHITE);
+    // --- INTERFACE DE PONTUAÇÃO E VIDAS (SÓ DESENHA SE NÃO FOR GAME OVER) --- //
+    if (!gameOver) {
+        float spacingRubik = 1.0f;
+        
+        // Sombra do Score
+        DrawTextEx(Rubik, TextFormat("Cocos: %i", score), (Vector2){832, 559}, 30, spacingRubik, BLACK); 
+        // Texto do Score
+        DrawTextEx(Rubik, TextFormat("Cocos: %i", score), (Vector2){830, 557}, 30, spacingRubik, RAYWHITE);
 
-    DrawText("Vidas: ", 32, 559, 34, BLACK); 
-    DrawText("Vidas: ", 30, 557, 34, RAYWHITE);
+        // Sombra do texto Vidas
+        DrawTextEx(Rubik, "Vidas: ", (Vector2){32, 559}, 30, spacingRubik, BLACK); 
+        // Texto do texto Vidas
+        DrawTextEx(Rubik, "Vidas: ", (Vector2){30, 557}, 30, spacingRubik, RAYWHITE);
 
-    // Desenho dos corações
-    float escalaCoracao = 0.6f;
-    for (int i = 0; i < vidas; i++) {
-        float espacamentoHorizontal = i * 45.0f;
-        Vector2 posicao = { 140.0f + espacamentoHorizontal, 555.0f }; 
-        DrawTextureEx(coracaoTexture, (Vector2){ posicao.x + 2, posicao.y + 2 }, 0.0f, escalaCoracao, Fade(BLACK, 0.60f));
-        DrawTextureEx(coracaoTexture, posicao, 0.0f, escalaCoracao, WHITE);
+        // Desenho dos corações
+        float escalaCoracao = 0.6f;
+        for (int i = 0; i < vidas; i++) {
+            float espacamentoHorizontal = i * 45.0f;
+            Vector2 posicao = { 130.0f + espacamentoHorizontal, 555.0f }; 
+            DrawTextureEx(coracaoTexture, (Vector2){ posicao.x + 2, posicao.y + 2 }, 0.0f, escalaCoracao, Fade(BLACK, 0.60f));
+            DrawTextureEx(coracaoTexture, posicao, 0.0f, escalaCoracao, WHITE);
+        }
     }
 
     // Bônus dourado centralizado //
-    if (bonusDourado) {
+    if (bonusDourado && !gameOver) {
         char textoBonus[30];
         sprintf(textoBonus, "BÔNUS DOURADO: %.0f s", bonusTimer);
         int larguraTexto = MeasureText(textoBonus, 28); 
@@ -380,88 +406,13 @@ void DrawGame() {
     
     // --- PAINEL DE GAME OVER --- //
     if (gameOver) {
-        // Fundo semitransparente cobrindo a tela
-        DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
-
-        // Tamanhos de fonte proporcionais baseados na GasoekOne
-        float gameOverFontSize = 120.0f;           // Base
-        float scoreFontSize = 84.0f;               // 30% menor
-        float recordeFontSize = 60.0f;             // 50% menor
-        float instructionFontSize = 35.0f;         // Instrução
-
-        // Spacing com borda
-        float gameOverSpacing = 1.2f;
-        float scoreSpacing = 1.0f;
-        float recordeSpacing = 0.9f;
-        float instructionSpacing = 0.75f;
-
-        // Montagem dos textos
-        const char *gameOverText = "GAME OVER";
-        char scoreText[50];
-        sprintf(scoreText, "Score final: %d", score);
-        char recordeText[50];
-        sprintf(recordeText, "Maior Recorde: %d", recorde);
-        const char *instructionText = "Pressione ENTER para reiniciar!";
-
-        // Medir tamanhos exatos com DrawTextEx
-        Vector2 gameOverSize = MeasureTextEx(GasoekOne, gameOverText, gameOverFontSize, gameOverSpacing);
-        Vector2 scoreSize = MeasureTextEx(GasoekOne, scoreText, scoreFontSize, scoreSpacing);
-        Vector2 recordeSize = MeasureTextEx(GasoekOne, recordeText, recordeFontSize, recordeSpacing);
-        Vector2 instructionSize = MeasureTextEx(GasoekOne, instructionText, instructionFontSize, instructionSpacing);
-
-        // Posições verticais e horizontais centralizadas na tela
-        Vector2 gameOverPos = { (1000 - gameOverSize.x) / 2.0f, 60.0f };
-        Vector2 scorePos    = { (1000 - scoreSize.x) / 2.0f, 200.0f };
-        Vector2 recordePos  = { (1000 - recordeSize.x) / 2.0f, 310.0f };
-        Vector2 instructionPos = { (1000 - instructionSize.x) / 2.0f, 430.0f };
-
-        // 1. Desenhar GAME OVER com borda preta (Texto principal: GOLD)
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (dx != 0 || dy != 0) {
-                    DrawTextEx(GasoekOne, gameOverText, (Vector2){gameOverPos.x + dx, gameOverPos.y + dy}, gameOverFontSize, gameOverSpacing, BLACK);
-                }
-            }
-        }
-        DrawTextEx(GasoekOne, gameOverText, gameOverPos, gameOverFontSize, gameOverSpacing, GOLD);
-
-        // 2. Desenhar Score com borda preta (Texto principal: WHITE)
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (dx != 0 || dy != 0) {
-                    DrawTextEx(GasoekOne, scoreText, (Vector2){scorePos.x + dx, scorePos.y + dy}, scoreFontSize, scoreSpacing, BLACK);
-                }
-            }
-        }
-        DrawTextEx(GasoekOne, scoreText, scorePos, scoreFontSize, scoreSpacing, WHITE);
-
-        // 3. Desenhar Recorde com borda preta (Texto principal: RED)
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (dx != 0 || dy != 0) {
-                    DrawTextEx(GasoekOne, recordeText, (Vector2){recordePos.x + dx, recordePos.y + dy}, recordeFontSize, recordeSpacing, BLACK);
-                }
-            }
-        }
-        DrawTextEx(GasoekOne, recordeText, recordePos, recordeFontSize, recordeSpacing, RED);
-
-        // 4. Desenhar Instrução com borda preta (Texto principal: WHITE)
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (dx != 0 || dy != 0) {
-                    DrawTextEx(GasoekOne, instructionText, (Vector2){instructionPos.x + dx, instructionPos.y + dy}, instructionFontSize, instructionSpacing, BLACK);
-                }
-            }
-        }
-        DrawTextEx(GasoekOne, instructionText, instructionPos, instructionFontSize, instructionSpacing, WHITE);
-
-        // 🛠️ AJUSTE MANUAL DO CARANGUEJO CHORANDO (Embaixo de todos os textos)
-        float caranguejoGameOverX = 468.0f; 
-        float caranguejoGameOverY = 500.0f; 
-
-        Vector2 posChorando = { caranguejoGameOverX, caranguejoGameOverY }; 
-        DrawTextureEx(texturasSkins[skinSelecionada][4], posChorando, 0.0f, 1.0f, WHITE);
+       DrawGameOverScreen(score, recorde, skinSelecionada, texturasSkins);
     }
+} // 👈 Chave adicionada aqui para fechar a DrawGame() corretamente!
+
+// Desenho do tutorial e Seletor //
+void DrawTutorial() {
+    DrawTutorialScreen(skinSelecionada, maiorSkinDesbloqueada, texturasSkins, nomesSkins, mar1Texture, mar2Texture, areiaTexture, coqueirosTexture);
 }
 
 // Funções de ranking //
@@ -477,66 +428,4 @@ void SalvarRecorde() {
     if (arquivo == NULL) return;
     fprintf(arquivo, "%d\n", recorde);
     fclose(arquivo);
-}
-
-// Desenho do tutorial e Seletor //
-void DrawTutorial() {
-    ClearBackground((Color){154, 244, 255, 255});
-
-    float tempoAtual = GetTime();
-    int waveOffset1 = sinf(tempoAtual * 1.5f) * 8;
-    DrawTexture(mar1Texture, 0, waveOffset1, WHITE);
-    int waveOffset2 = sinf((tempoAtual * 1.5f) + 1.0f) * 8;
-    DrawTexture(mar2Texture, 0, waveOffset2, WHITE);
-    DrawTexture(areiaTexture, 0, 0, WHITE);
-    DrawTexture(coqueirosTexture, 0, 0, WHITE);
-
-    // Fundo branco semitransparente atrás do texto //
-    DrawRectangle(100, 30, 800, 540, Fade(WHITE, 0.75f));
-
-    // --- MUDANÇA APENAS DE FONTE (USANDO GASOEKONE NOS TÍTULOS E BOTÕES) --- //
-    const char *tituloTexto = "VAI CATAR COQUINHO";
-    float tituloSize = 46.0f;
-    Vector2 tituloMedidas = MeasureTextEx(GasoekOne, tituloTexto, tituloSize, 1.0f);
-    DrawTextEx(GasoekOne, tituloTexto, (Vector2){(1000 - tituloMedidas.x)/2, 45}, tituloSize, 1.0f, DARKGREEN);
-
-    // Textos informativos menores permanecem legíveis com fonte padrão limpa
-    DrawText("Como jogar:", 1000/2 - MeasureText("Como jogar:", 26)/2, 115, 26, BLACK);
-    DrawText("Use as setas <- -> para mover o caranguejo", 1000/2 - MeasureText("Use as setas <- -> para mover o caranguejo", 22)/2, 150, 22, BLACK);
-    
-    DrawText("Tipos de itens:", 1000/2 - MeasureText("Tipos de itens:", 26)/2, 195, 26, BLACK);
-    DrawText("Coco verde: +1 ponto", 1000/2 - MeasureText("Coco verde: +1 ponto", 22)/2, 230, 22, DARKGREEN);
-    DrawText("Coco dourado: dobra os pontos por 20 segundos!", 1000/2 - MeasureText("Coco dourado: dobra os pontos por 20 segundos!", 22)/2, 255, 22, GOLD);
-    DrawText("Agua de coco: +1 vida", 1000/2 - MeasureText("Agua de coco: +1 vida", 22)/2, 280, 22, BLUE);
-    DrawText("Lixo: -1 vida", 1000/2 - MeasureText("Lixo: -1 vida", 22)/2, 305, 22, RED);
-    
-    // --- EXIBIÇÃO DA SKIN SELECIONADA --- //
-    const char *instrucaoSkin = "Escolha seu Visual (Setas de CIMA / BAIXO):";
-    DrawText(instrucaoSkin, 1000/2 - MeasureText(instrucaoSkin, 24)/2, 345, 24, BLACK);
-    
-    float skinMenuX = 435.0f; 
-    float skinMenuY = 360.0f; 
-    
-    bool estaBloqueada = (skinSelecionada > maiorSkinDesbloqueada);
-
-    if (estaBloqueada) {
-        DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, GRAY);
-    } else {
-        DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, WHITE);
-    }
-
-    char textoSkin[60];
-    if (estaBloqueada) {
-        sprintf(textoSkin, "< %s (Bloqueado) >", nomesSkins[skinSelecionada]);
-        DrawText(textoSkin, 1000/2 - MeasureText(textoSkin, 24)/2, 480, 24, RED);
-    } else {
-        sprintf(textoSkin, "< Skin: %s >", nomesSkins[skinSelecionada]);
-        DrawText(textoSkin, 1000/2 - MeasureText(textoSkin, 24)/2, 480, 24, ORANGE);
-    }
-
-    // Botão de Iniciar usando a GasoekOne
-    const char *botaoTexto = "Pressione ENTER para comecar!";
-    float botaoSize = 24.0f;
-    Vector2 botaoMedidas = MeasureTextEx(GasoekOne, botaoTexto, botaoSize, 1.0f);
-    DrawTextEx(GasoekOne, botaoTexto, (Vector2){(1000 - botaoMedidas.x)/2, 530}, botaoSize, 1.0f, DARKBLUE);
 }
