@@ -16,7 +16,7 @@
 
 * **Coco normal:** +1 ponto
 * **Lixo na praia:** -1 vida
-* **Coco dourado:** desacelera os cocos , dobra os pontos e previne você de perder vidas coletando lixo  
+* **Coco dourado:** dobra os pontos por 20 seg
 * **Água de coco:** +1 vida
 
 💀 **Fim de jogo:** O jogador perde quando suas vidas chegam a 0.
@@ -75,11 +75,12 @@ canva
 * [x] Sistema de vidas
 * [x] Tipos de cocos
 * [x] Sistema de pontuação
-* [ ] Mecânica avançada
-* [ ] Salvamento de top scores
-* [ ] Interface no terminal
-* [ ] Música e efeitos sonoros
-* [ ] tela de ínicio + game over
+* [x] Mecânica avançada
+* [x] Salvamento de top scores
+* [x] Interface no terminal
+* [x] Música e efeitos sonoros
+* [x] tela de ínicio + game over
+* [x] impementação de skins colecionáveis
 * [ ] Vídeo demonstrativo
 * [ ] Slides
 
