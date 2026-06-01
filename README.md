@@ -68,6 +68,8 @@ Depois execute com:
 ### Entrega 2:
 canva
 > 🔗 *(https://www.canva.com/design/DAHLRSiwNoo/AWIW877gOoll88peoI5eaQ/edit)*
+video no youtube
+> https://youtu.be/ZhzCPaU3L_8
 
 ## 📌 Status do projeto
 
