@@ -225,6 +225,7 @@ void UpdateGame(float deltaTime) {
         bonusTimer = 0;
         gameTimer = 0;
         cocosAdicionados = 2;
+        temSkinNova = false;
 
         ClearCocos(); 
         InitCocos(); 
@@ -317,15 +318,22 @@ void UpdateGame(float deltaTime) {
         if (score > recorde) {
             recorde = score;
             SalvarRecorde();
-            
+        }
+            int antigaMaiorSkin = maiorSkinDesbloqueada;
+
             // Recalcula o teto de skins caso quebre o recorde geral na rodada
             if (recorde >= 200)      maiorSkinDesbloqueada = 5;
             else if (recorde >= 120) maiorSkinDesbloqueada = 4;
             else if (recorde >= 80)  maiorSkinDesbloqueada = 3;
             else if (recorde >= 50)  maiorSkinDesbloqueada = 2;
             else if (recorde >= 20)  maiorSkinDesbloqueada = 1;
+            else                    maiorSkinDesbloqueada = 0;
+            
+            // Verifica se uma nova skin foi desbloqueada
+            if (maiorSkinDesbloqueada > antigaMaiorSkin) {
+                temSkinNova = true;
+            }
         }
-    }
 }
 
 // Desenho do jogo //

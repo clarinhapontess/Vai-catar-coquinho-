@@ -1,8 +1,1 @@
-<<<<<<< HEAD
-=======
-9
-6
-6
-6
-6
->>>>>>> 899bbe4 (adicionando cor amarela ao texto do pause ( para ficar mais legivel ) e colocando mensagem de sair do jogo)
+

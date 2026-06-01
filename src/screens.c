@@ -157,11 +157,40 @@ void DrawTutorialScreen(int skinSelecionada, int maiorSkinDesbloqueada, Texture2
     Vector2 sizeInstrucaoSkin = MeasureTextEx(Rubik, instrucaoSkin, 24, 1.0f);
     DrawTextEx(Rubik, instrucaoSkin, (Vector2){sw * 0.5f - sizeInstrucaoSkin.x / 2, sh * 0.575f}, 24, 1.0f, BLACK);
 
-    float skinMenuX = sw * 0.45f;
-    float skinMenuY = sh * 0.633f;
+    float skinMenuX = sw * 0.44f;
+    float skinMenuY = sh * 0.600f;
     bool estaBloqueada = (skinSelecionada > maiorSkinDesbloqueada);
 
+    // Desenha o sprite do caranguejo (cinza se tiver trancado)
     DrawTexture(texturasSkins[skinSelecionada][0], (int)skinMenuX, (int)skinMenuY, estaBloqueada ? GRAY : WHITE);
+
+    // 🛠️ NOVO BLOCO RECONSTRUÍDO: Caixa de preço em cima do caranguejo bloqueado
+    if (estaBloqueada) {
+        int rectW = 140;
+        int rectH = 45; 
+        int rectX = (int)(sw * 0.5f) - (rectW / 2);
+        int rectY = (int)skinMenuY + 50; // Altura centralizada em cima do sprite
+        
+        // Retângulo branco com transparência
+        DrawRectangle(rectX, rectY, rectW, rectH, Fade(WHITE, 0.85f));
+
+        // Define o texto do preço baseado na skin selecionada
+        const char* precoText = "0 Cocos";
+        if (skinSelecionada == 1)      precoText = "20 Cocos";
+        else if (skinSelecionada == 2) precoText = "50 Cocos";
+        else if (skinSelecionada == 3) precoText = "80 Cocos";
+        else if (skinSelecionada == 4) precoText = "120 Cocos";
+        else if (skinSelecionada == 5) precoText = "200 Cocos";
+
+        // Centraliza e desenha o texto vermelho do preço
+        float spacingRubik = 1.0f;
+        Vector2 sizePreco = MeasureTextEx(Rubik, precoText, 20, spacingRubik);
+        Vector2 posPreco = { 
+            (sw * 0.5f) - (sizePreco.x / 2.0f), 
+            (float)rectY + (rectH / 2.0f) - (sizePreco.y / 2.0f) 
+        };
+        DrawTextEx(Rubik, precoText, posPreco, 20, spacingRubik, RED);
+    }
 
     char textoSkin[60];
     if (estaBloqueada) {
@@ -190,51 +219,157 @@ void DrawTutorialScreen(int skinSelecionada, int maiorSkinDesbloqueada, Texture2
 }
 
 void DrawGameOverScreen(int score, int recorde, int skinSelecionada, Texture2D texturasSkins[6][5]) {
-    int sw = GetScreenWidth();
-    int sh = GetScreenHeight();
+    // Fundo semitransparente
+    DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.7f));
 
-    DrawRectangle(0, 0, sw, sh, Fade(WHITE, 0.7f));
+    float gameOverFontSize = 120.0f;           
+    float scoreFontSize = 84.0f;               
+    float recordeFontSize = 60.0f;             
+    float instructionFontSize = 35.0f;         
 
-    float gameOverFontSize    = 120.0f;
-    float scoreFontSize       = 84.0f;
-    float recordeFontSize     = 60.0f;
-    float instructionFontSize = 35.0f;
-    float gameOverSpacing     = 1.2f;
-    float scoreSpacing        = 1.0f;
-    float recordeSpacing      = 0.9f;
-    float instructionSpacing  = 0.75f;
+    float gameOverSpacing = 1.2f;
+    float scoreSpacing = 1.0f;
+    float recordeSpacing = 0.9f;
+    float instructionSpacing = 0.75f;
 
     const char *gameOverText = "GAME OVER";
-    char scoreText[50];   sprintf(scoreText,  "Score final: %d",    score);
-    char recordeText[50]; sprintf(recordeText, "Maior Recorde: %d", recorde);
+    char scoreText[50];
+    sprintf(scoreText, "Score final: %d", score);
+    char recordeText[50];
+    sprintf(recordeText, "Maior Recorde: %d", recorde);
     const char *instructionText = "Pressione ENTER para reiniciar!";
 
-    Vector2 gameOverSize    = MeasureTextEx(GasoekOne, gameOverText,    gameOverFontSize,    gameOverSpacing);
-    Vector2 scoreSize       = MeasureTextEx(GasoekOne, scoreText,       scoreFontSize,       scoreSpacing);
-    Vector2 recordeSize     = MeasureTextEx(GasoekOne, recordeText,     recordeFontSize,     recordeSpacing);
+    Vector2 gameOverSize = MeasureTextEx(GasoekOne, gameOverText, gameOverFontSize, gameOverSpacing);
+    Vector2 scoreSize = MeasureTextEx(GasoekOne, scoreText, scoreFontSize, scoreSpacing);
+    Vector2 recordeSize = MeasureTextEx(GasoekOne, recordeText, recordeFontSize, recordeSpacing);
     Vector2 instructionSize = MeasureTextEx(GasoekOne, instructionText, instructionFontSize, instructionSpacing);
 
-    Vector2 gameOverPos    = { (sw - gameOverSize.x)    / 2.0f, sh * 0.067f };
-    Vector2 scorePos       = { (sw - scoreSize.x)       / 2.0f, sh * 0.283f };
-    Vector2 recordePos     = { (sw - recordeSize.x)     / 2.0f, sh * 0.450f };
-    Vector2 instructionPos = { (sw - instructionSize.x) / 2.0f, sh * 0.633f };
+    Vector2 gameOverPos = { (1000 - gameOverSize.x) / 2.0f, 40.0f };
+    Vector2 scorePos    = { (1000 - scoreSize.x) / 2.0f, 170.0f };
+    Vector2 recordePos  = { (1000 - recordeSize.x) / 2.0f, 270.0f };
+    Vector2 instructionPos = { (1000 - instructionSize.x) / 2.0f, 430.0f };
 
+    // --- DESENHO DOS TEXTOS ---
+    
+    // GAME OVER
     for (int dx = -2; dx <= 2; dx++) {
         for (int dy = -2; dy <= 2; dy++) {
-            if (dx != 0 || dy != 0) {
-                DrawTextEx(GasoekOne, gameOverText,    (Vector2){gameOverPos.x    + dx, gameOverPos.y    + dy}, gameOverFontSize,    gameOverSpacing,    BLACK);
-                DrawTextEx(GasoekOne, scoreText,       (Vector2){scorePos.x       + dx, scorePos.y       + dy}, scoreFontSize,       scoreSpacing,       BLACK);
-                DrawTextEx(GasoekOne, recordeText,     (Vector2){recordePos.x     + dx, recordePos.y     + dy}, recordeFontSize,     recordeSpacing,     BLACK);
-                DrawTextEx(GasoekOne, instructionText, (Vector2){instructionPos.x + dx, instructionPos.y + dy}, instructionFontSize, instructionSpacing, BLACK);
-            }
+            if (dx != 0 || dy != 0) DrawTextEx(GasoekOne, gameOverText, (Vector2){gameOverPos.x + dx, gameOverPos.y + dy}, gameOverFontSize, gameOverSpacing, BLACK);
+        }
+    }
+    DrawTextEx(GasoekOne, gameOverText, gameOverPos, gameOverFontSize, gameOverSpacing, GOLD);
+
+    // SCORE FINAL
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) DrawTextEx(GasoekOne, scoreText, (Vector2){scorePos.x + dx, scorePos.y + dy}, scoreFontSize, scoreSpacing, BLACK);
+        }
+    }
+    DrawTextEx(GasoekOne, scoreText, scorePos, scoreFontSize, scoreSpacing, WHITE);
+
+    // MAIOR RECORDE
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) DrawTextEx(GasoekOne, recordeText, (Vector2){recordePos.x + dx, recordePos.y + dy}, recordeFontSize, recordeSpacing, BLACK);
+        }
+    }
+    DrawTextEx(GasoekOne, recordeText, recordePos, recordeFontSize, recordeSpacing, RED);
+
+    // --- LÓGICA DE NOVO PERSONAGEM DESBLOQUEADO ---
+    // Verifica se o score atual bateu um dos marcos de desbloqueio
+    bool novoDesbloqueio = false;
+    if (score >= recorde) { // Só avisa se for recorde novo ou igualado
+        if ((score >= 20 && score < 50) || (score >= 50 && score < 80) || 
+            (score >= 80 && score < 120) || (score >= 120 && score < 200) || (score >= 200)) {
+            novoDesbloqueio = true;
         }
     }
 
-    DrawTextEx(GasoekOne, gameOverText,    gameOverPos,    gameOverFontSize,    gameOverSpacing,    GOLD);
-    DrawTextEx(GasoekOne, scoreText,       scorePos,       scoreFontSize,       scoreSpacing,       WHITE);
-    DrawTextEx(GasoekOne, recordeText,     recordePos,     recordeFontSize,     recordeSpacing,     RED);
+    if (novoDesbloqueio) {
+        const char* unlockText = "NOVO PERSONAGEM DESBLOQUEADO!";
+        // Faz o texto pulsar entre Amarelo e Verde Lima
+        float pulse = (sinf(GetTime() * 10.0f) + 1.0f) / 2.0f; 
+        Color corPulso = (pulse > 0.5f) ? YELLOW : LIME;
+
+        Vector2 unlockSize = MeasureTextEx(Rubik, unlockText, 30, 1.0f);
+        Vector2 unlockPos = { (1000 - unlockSize.x) / 2.0f, 340.0f }; // Posição entre o Recorde e a Instrução
+
+        // Borda do texto de desbloqueio
+        DrawTextEx(Rubik, unlockText, (Vector2){unlockPos.x + 2, unlockPos.y + 2}, 30, 1.0f, BLACK);
+        DrawTextEx(Rubik, unlockText, unlockPos, 30, 1.0f, corPulso);
+    }
+
+    // INSTRUÇÃO REINICIAR
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx != 0 || dy != 0) DrawTextEx(GasoekOne, instructionText, (Vector2){instructionPos.x + dx, instructionPos.y + dy}, instructionFontSize, instructionSpacing, BLACK);
+        }
+    }
     DrawTextEx(GasoekOne, instructionText, instructionPos, instructionFontSize, instructionSpacing, WHITE);
 
-    Vector2 posChorando = { sw * 0.45f, sh * 0.767f }; 
+    // CARANGUEJO CHORANDO
+    float caranguejoGameOverX = 445.0f; 
+    float caranguejoGameOverY = 460.0f; // Ajustei um pouco para baixo para não bater no texto
+
+    Vector2 posChorando = { caranguejoGameOverX, caranguejoGameOverY }; 
     DrawTextureEx(texturasSkins[skinSelecionada][4], posChorando, 0.0f, 1.0f, WHITE);
+}
+
+// --- TELA DE CAPA / MENU INICIAL --- //
+void DrawCapaScreen() {
+    // Trazendo as texturas e o array de skins lá do game.c
+    extern Texture2D areiaTexture;
+    extern Texture2D coqueirosTexture;
+    extern Texture2D texturasSkins[6][5];
+
+    // Fundo azul praia estático para a capa
+    ClearBackground((Color){154, 244, 255, 255});
+    
+    // 🌴 1. DESENHA O CENÁRIO DE FUNDO (Areia e Coqueiros)
+    DrawTexture(areiaTexture, 0, 0, WHITE);
+    DrawTexture(coqueirosTexture, 0, 0, WHITE);
+
+    float spacingGasoek = 2.0f;
+    float spacingRubik = 1.0f;
+
+    // 2. TÍTULO DO JOGO (Grande e imponente)
+    const char* tituloText = "VAI CATAR COQUINHO!";
+    Vector2 sizeTitulo = MeasureTextEx(GasoekOne, tituloText, 64, spacingGasoek);
+    Vector2 posTitulo = { 500.0f - (sizeTitulo.x / 2.0f), 130.0f }; // Subi um pouco (de 180 para 130) para dar espaço ao Crabisson
+    
+    // Borda preta no título
+    DrawTextEx(GasoekOne, tituloText, (Vector2){posTitulo.x - 3, posTitulo.y - 3}, 64, spacingGasoek, BLACK);
+    DrawTextEx(GasoekOne, tituloText, (Vector2){posTitulo.x + 3, posTitulo.y - 3}, 64, spacingGasoek, BLACK);
+    DrawTextEx(GasoekOne, tituloText, (Vector2){posTitulo.x - 3, posTitulo.y + 3}, 64, spacingGasoek, BLACK);
+    DrawTextEx(GasoekOne, tituloText, (Vector2){posTitulo.x + 3, posTitulo.y + 3}, 64, spacingGasoek, BLACK);
+    DrawTextEx(GasoekOne, tituloText, posTitulo, 64, spacingGasoek, ORANGE);
+
+    // 3. SUBTÍTULO OU FRASE DE EFEITO
+    const char* subText = "As aventuras de crabisson o caranguejo!";
+    Vector2 sizeSub = MeasureTextEx(Rubik, subText, 24, spacingRubik);
+    DrawTextEx(Rubik, subText, (Vector2){500.0f - (sizeSub.x / 2.0f), 210.0f}, 24, spacingRubik, DARKGRAY);
+
+    // 🦀 4. DESENHA O CRABISSON 1 (Skin 0, Sprite 0) CENTRALIZADO
+    // Centraliza o sprite de 100px de largura em X=500 (500 - 50 = 450)
+    float crabissonX = 450.0f;
+    float crabissonY = 460.0f;
+    Vector2 posCrabisson = { crabissonX, crabissonY };
+    
+    // Sombra sutil preta atrás do Crabisson para dar destaque na areia
+    DrawTextureEx(texturasSkins[0][0], (Vector2){ crabissonX + 2, crabissonY + 2 }, 0.0f, 1.0f, Fade(BLACK, 0.4f));
+    // O grande Crabisson na sua glória original:
+    DrawTextureEx(texturasSkins[0][0], posCrabisson, 0.0f, 1.0f, WHITE);
+
+    // 5. TEXTO PISCANTE PARA COMEÇAR
+    const char* startText = "Pressione ENTER para iniciar a jornada";
+    float pisca = sinf(GetTime() * 5.0f); // Faz o texto piscar suavemente
+    Color corTexto = (pisca > 0.0f) ? DARKBLUE : Fade(DARKBLUE, 0.3f);
+
+    Vector2 sizeStart = MeasureTextEx(GasoekOne, startText, 26, spacingGasoek);
+    // Adiciona uma sombra preta no botão start para garantir leitura em cima da areia
+    DrawTextEx(GasoekOne, startText, (Vector2){500.0f - (sizeStart.x / 2.0f) + 1, 381.0f}, 26, spacingGasoek, BLACK);
+    DrawTextEx(GasoekOne, startText, (Vector2){500.0f - (sizeStart.x / 2.0f), 380.0f}, 26, spacingGasoek, corTexto);
+
+    // Créditos simples no rodapé
+    DrawTextEx(Rubik, "Desenvolvido em Raylib", (Vector2){30, 560}, 16, spacingRubik, DARKGRAY);
 }
