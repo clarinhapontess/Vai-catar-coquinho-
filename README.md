@@ -47,7 +47,7 @@
 
 ## 🎥 Vídeo do jogo funcionando
 
-> 🔗 *(futuramente link do vídeo)*
+> 🔗 *(https://youtu.be/ZhzCPaU3L_8)*
 
 ## ▶️ Como compilar e executar:
 
@@ -67,9 +67,7 @@ Depois execute com:
 
 ### Entrega 2:
 canva
-> 🔗 *(https://www.canva.com/design/DAHLRSiwNoo/AWIW877gOoll88peoI5eaQ/edit)*
-video no youtube
-> https://youtu.be/ZhzCPaU3L_8
+> 🔗 *(https://canva.link/j1c6jrjn37qzcms)*
 
 ## 📌 Status do projeto
 
