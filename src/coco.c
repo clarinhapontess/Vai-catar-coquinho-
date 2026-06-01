@@ -3,26 +3,24 @@
 #include <stdlib.h>
 #include "game.h"  
 
-// Lista encadeada
 Node *listaCocos = NULL;
 
-// Texturas
+// texturas
 Texture2D cocoTexture;
 Texture2D lataTexture;
 Texture2D garrafaTexture;
 Texture2D douradoTexture;
 Texture2D aguaTexture;
 
-// Matriz de spawn
+// matriz de controle de spawn para evitar que dois cocos apareçam no mesmo lugar
 int spawnAreas[2][5] = {0};
 
-// Escolhe o tipo do coco e define a velocidade de acordo com a pontuação
+// define tipo de coco e velocidade
 void SetCocoType(Coco *coco) {
-    extern int score; // Puxa o score atual lá do game.c
+    extern int score; 
 
     int chance = GetRandomValue(1, 100);
     
-    // --- LÓGICA DE VELOCIDADE BASEADA NO SCORE ---
     float minSpeed = 2;
     float maxSpeed = 2.5f;
 
@@ -46,30 +44,29 @@ void SetCocoType(Coco *coco) {
         maxSpeed = 2.5f;
     }
 
-    // Coco normal
+    // coco normal
     if (chance <= 58) {
         coco->type = 0;
         coco->speed = GetRandomValue(minSpeed, maxSpeed);
     }
-    // Lixo
+    // lixo
     else if (chance <= 95) {
         coco->type = 1;
         coco->speed = GetRandomValue(minSpeed, maxSpeed);
         coco->sprite = GetRandomValue(0, 1);
     }
-    // Coco dourado
+    // dourado
     else if (chance <= 98) {
         coco->type = 2;
         coco->speed = minSpeed; 
     }
-    // Água de coco
+    // agua de coco
     else {
         coco->type = 3;
         coco->speed = maxSpeed; 
     }
 }
-
-// Adiciona um único coco na lista encadeada
+// adiciona cocos de acordo com a pontuação
 void AddCoco() {
     Node *novo = (Node*)malloc(sizeof(Node));
     if (novo == NULL) return;
@@ -98,8 +95,7 @@ void AddCoco() {
     novo->next = listaCocos;
     listaCocos = novo;
 }
-
-// Inicializa as texturas e começa com 2 cocos
+// incializa as skins dos cocos
 void InitCocos() {
     cocoTexture = LoadTexture("assets/cocos/coco.png");
     lataTexture = LoadTexture("assets/cocos/lata.png");
@@ -112,16 +108,15 @@ void InitCocos() {
     }
 }
 
-// Atualiza a posição de queda dos cocos
+// atualiza posição de quedas
 void Updatecoco(float deltaTime) {
-    extern float cocoSpeedMultiplier; // Puxa o multiplicador de tempo/dificuldade do game.c
+    extern float cocoSpeedMultiplier; 
     Node *atual = listaCocos;
 
     while (atual != NULL) {
-        // Multiplica a velocidade base pelo multiplicador de progressão
+        // move o coco p baixo
         atual->coco.y += atual->coco.speed * cocoSpeedMultiplier;
-
-        // Respawn quando sai da tela
+        // respawn do coco
         if (atual->coco.y > (GetScreenHeight()+50)) {
             spawnAreas[atual->coco.row][atual->coco.col] = 0;
 
@@ -144,7 +139,7 @@ void Updatecoco(float deltaTime) {
     }
 }
 
-// Limpa a memória da lista encadeada
+// limpa memoria
 void ClearCocos() {
     Node *atual = listaCocos;
     while (atual != NULL) {
@@ -161,7 +156,7 @@ void ClearCocos() {
     }
 }
 
-// Desenha cada coco com sua respectiva textura
+// desenha cocos
 void DrawCocos() {
     Node *atual = listaCocos;
     while (atual != NULL) {

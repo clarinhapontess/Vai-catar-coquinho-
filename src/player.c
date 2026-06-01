@@ -1,25 +1,22 @@
 #include "raylib.h"
 #include "player.h"
 
-Player player; // -> cria o player //
+Player player; // estrutura do jogador
 
-// Função para inicializar o jogador (onde ele começa)//
 void InitPlayer() {
-    // As texturas não são mais carregadas aqui individualmente! 
-    // Elas são carregadas via matriz automática na InitGame().
 
     player.x = GetScreenWidth() * 0.45f;
     player.y = GetScreenHeight() * 0.75f;
-    player.speed = 7;   //-> velocidade do jogador //
-    player.width = 100; //-> largura do jogador //
-    player.height = 40; //-> altura do jogador //
+    player.speed = 7;   // velocidade do jogador 
+    player.width = 100; // largura do jogador 
+    player.height = 40; // altura do jogador 
 }
 
-// Função para mover o jogador com o teclado //
+// move o jogador 
 void UpdatePlayer(float deltaTime) {
-    extern float playerSpeedMultiplier; // vai multiplicar a velocidade base por esse
+    extern float playerSpeedMultiplier; // atualiza velocidade do jogador
     
-    float baseSpeed = 230.0f;  // Velocidade base
+    float baseSpeed = 230.0f; 
     float speedAtual = baseSpeed * playerSpeedMultiplier;
     
     // tecla para movimentar o jogador para a esquerda
@@ -31,7 +28,7 @@ void UpdatePlayer(float deltaTime) {
         player.x += speedAtual * deltaTime;
     }
 
-    // delimita o jogador a area visivel da tela//
+    // delimita o jogador a area visivel da tela
     if (player.x < 45)
         player.x = 45;
 
@@ -39,31 +36,29 @@ void UpdatePlayer(float deltaTime) {
         player.x = 820;
 }
 
-// Função para desenhar o jogador //
+// desenha o jogador
 void DrawPlayer() {
-    // Puxa as variáveis de controle globais lá do game.c
     extern int vidas; 
     extern int skinSelecionada;
     extern Texture2D texturasSkins[6][5];
 
-    // Mapeamento das 5 versões de imagem por skin:
-    // índice 0 -> nome1.png (Normal - usada no tutorial)
-    // índice 1 -> nome2.png (Normal com Cestinha)
-    // índice 2 -> nome3.png (Machucado 1)
-    // índice 3 -> nome4.png (Machucado 2)
-    // índice 4 -> nome5.png (Chorando Game Over - desenhado no game.c)
+    //versões das skins
+    // índice 0 -> nome1.png (tutorial)
+    // índice 1 -> nome2.png (com cestinha)
+    // índice 2 -> nome3.png (machucado 1)
+    // índice 3 -> nome4.png (machucado 2)
+    // índice 4 -> nome5.png (chorando game over)
     
-    int indiceVersao = 1; // Padrão de jogo: Vida Cheia (Normal com Cestinha)
-
+    int indiceVersao = 1; 
     if (vidas == 2) {
-        indiceVersao = 2; // Mudança automática para Machucado 1
+        indiceVersao = 2; // muda para machucado1
     } else if (vidas == 1) {
-        indiceVersao = 3; // Mudança automática para Machucado 2
+        indiceVersao = 3; // muda para machucado2
     } else if (vidas <= 0) {
-        return; // Se morreu, não desenha o player aqui na tela de jogo (o game.c vai desenhar a versão chorando)
+        return; // não desenha o jogador se não tiver vidas
     }
 
-    // Desenha a textura da skin selecionada com a versão correspondente à vida atual
+    // desenha o jogador com a skin selecionada e versão correspondente às vidas
     DrawTextureEx(
         texturasSkins[skinSelecionada][indiceVersao],
         (Vector2){player.x, player.y},

@@ -5,7 +5,7 @@
 #include "player.h"
 #include "screens.h"
 
-// Criação e alocação real das fontes globais
+// fontes
 Font GasoekOne;
 Font Rubik;
 
@@ -13,7 +13,6 @@ int main() {
     InitWindow(1000, 600, "Vai Catar Coquinho");
     SetTargetFPS(60);
     
-    // Lista unificada de acentos e caracteres
     const char *caracteresSuportados = 
         "abcdefghijklmnopqrstuvwxyz"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -23,17 +22,16 @@ int main() {
     int contagemCodepoints = 0;
     int *codepoints = LoadCodepoints(caracteresSuportados, &contagemCodepoints);
     
-    // Carrega as duas fontes do jeito certo com suporte a acentos
+    // carrega fontes
     GasoekOne = LoadFontEx("assets/fonts/GasoekOne-Regular.ttf", 64, codepoints, contagemCodepoints);
     Rubik = LoadFontEx("assets/fonts/Rubik-Bold.ttf", 48, codepoints, contagemCodepoints);
     
     UnloadCodepoints(codepoints);
 
-    // Proteção caso as fontes sumam da pasta
     if (GasoekOne.texture.id == 0) GasoekOne = GetFontDefault();
     if (Rubik.texture.id == 0) Rubik = GetFontDefault();
     
-    // Inicializa o jogo e as telas da história
+    // inicializa jogo
     InitGame();
     InitScreens();
 
@@ -57,7 +55,7 @@ int main() {
         EndDrawing();
        
     }
-    // Finalizações e descarregamento
+    // limpeza de recursos
     UnloadMusicStream(musicaFundo);
     UnloadSound(ganhouPontos);
     UnloadSound(perdeuPontos);

@@ -3,40 +3,34 @@
 
 #include "raylib.h"
 
-// Estrutura para representar o coco //
-// O coco é um item da lista de cocos 
+// estrutura do coco
 typedef struct coco {
     float x;
     float y;
     float speed;
     int radius;
     
-    // Tipo e cor para diferenciar os cocos //
+    // tipo dos cocos
     int sprite;
     int type;
     Color color;
 
-    // REQUISITO: matriz (posição do coco no grid)
     int row;
     int col;
 } Coco;
-
-// Lista encadeada + ponteiros //
+// no para a lista cocos
 typedef struct Node {
     Coco coco;
-    struct Node *next; // -> ponteiro para o próximo nó (coco) da lista //
+    struct Node *next; 
 } Node;
-
-// Declaração das funções para o coco //
+// funções do coco
 void InitCocos();
 void Updatecoco(float deltaTime);
 void DrawCocos();
-void AddCoco(); // <-- Corrigido aqui para o singular (combinando com o coco.c)
+void AddCoco(); 
 void ClearCocos();
 
 extern Node *listaCocos;
-
-// Matriz //
 extern int spawnAreas[2][5];
 
 #endif

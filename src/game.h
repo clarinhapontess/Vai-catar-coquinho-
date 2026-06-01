@@ -6,7 +6,7 @@
 
 #define RANKING 5
 
-// Ranking //
+// ranking
 extern int ranking[RANKING];
 
 // Texturas //
@@ -16,14 +16,14 @@ extern Texture2D mar2Texture;
 extern Texture2D coqueirosTexture;
 extern Texture2D coracaoTexture;
 
-// Música e efeitos //
+// musica e efeitos sonoros
 extern Music musicaFundo;
 extern Sound ganhouPontos;
 extern Sound perdeuPontos;
 extern Sound morreu;
 extern Sound maisVidas;
 
-// Variáveis do jogo //
+// globais
 extern int recorde;
 extern bool bonusDourado;
 extern bool gameOver;
@@ -40,7 +40,7 @@ extern bool isPaused;
 extern Font GasoekOne;
 extern bool naCapa;
 
-// Funções //
+// funções do jogo
 void InitGame();
 void UpdateGame(float deltaTime);
 void DrawGame();
@@ -50,7 +50,7 @@ void ToggleMute();
 void CarregarRecorde();
 void SalvarRecorde();
 
-// Funções de Ranking //
+// funções ranking
 void CarregarRanking();
 void SalvarRanking();
 void InserirNoRanking(int novoScore);

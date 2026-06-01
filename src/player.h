@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-// Estrutura para representar o jogador //
+// estrutura do jogador
 typedef struct {
     float x;
     float y;
@@ -10,12 +10,11 @@ typedef struct {
     int height;
 } Player;
 
-// Variável global para o jogador //
+// funções do jogador
 void InitPlayer();
 void UpdatePlayer(float deltaTime);
 void DrawPlayer();
-extern bool temSkinNova; // Avisa se há uma skin nova não visualizada
-
-extern Player player; // -> Permite que outros arquivos usem: player.x, player.y, player.speed //
+extern bool temSkinNova; 
+extern Player player;
 
 #endif

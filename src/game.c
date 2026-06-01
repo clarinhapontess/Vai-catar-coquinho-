@@ -8,26 +8,26 @@
 #include <time.h>
 #include "screens.h"
 
-// Ranking //
+// ranking
 extern Font GasoekOne;
 extern Font Rubik;
 int recorde = 0;
 
-// Texturas do background //
+// texturas background
 Texture2D areiaTexture;
 Texture2D mar1Texture;
 Texture2D mar2Texture;
 Texture2D coqueirosTexture;
 Texture2D coracaoTexture;
 
-// Música e efeitos sonoros //
+// musica e efeitos sonoros
 Music musicaFundo; 
 Sound ganhouPontos;
 Sound perdeuPontos;
 Sound morreu;
 Sound maisVidas;
 
-// Variáveis globais do estado do jogo //
+// globais
 int score = 0;
 int vidas = 3;
 bool bonusDourado = false;
@@ -39,25 +39,25 @@ bool tutorial = true;
 float playerSpeedMultiplier = 1.0f; 
 float cocoSpeedMultiplier = 1.0f;
 extern bool naHistoria;
-bool naCapa = true; // O jogo começa na capa!
+bool naCapa = true; // para o jogo começar na capa
 
-//variáveis da funcionalidade de mutar jogo 
+// variáveis da funcionalidade de mutar jogo 
 bool isMuted = false;
 float volumeAnterior = 0.5f;
-// --- SISTEMA GLOBAL DE SKINS --- //
+// skins
 int skinSelecionada = 0;
 int maiorSkinDesbloqueada = 0;
 bool temSkinNova = false;
 Texture2D texturasSkins[6][5];
 const char* nomesSkins[6] = { "player", "maria", "gaiamum", "pirata", "robo", "chico" };
 
-// Adiciona cocos conforme dificuldade aumenta //
+// adiciona os cocos pela dificuldade
 int cocosAdicionados = 3;
 
-// Protótipos das funções de ranking e interface //
 void DrawTutorial();
 void CarregarRecorde();
 void SalvarRecorde();
+
 //função de mutar volume 
 void ToggleMute() {
     isMuted = !isMuted;
@@ -76,11 +76,11 @@ void ToggleMute() {
         SetSoundVolume(maisVidas, 1.0f);
     }
 }
-// Inicialização do jogo (carrega texturas, sons, configurações iniciais) //
+// inicialização do jogo
 void InitGame() {
     InitAudioDevice();
 
-    // Música de fundo e áudios
+    // musica de fundo e audios
     musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.wav");
     SetMusicVolume(musicaFundo, 0.5f);
     ganhouPontos = LoadSound("assets/audio/ganhouPontos.wav");
@@ -89,7 +89,7 @@ void InitGame() {
     if (FileExists("assets/audio/maisVidas.wav")){
         maisVidas = LoadSound("assets/audio/maisVidas.wav");
     }
-    // --- 1º CARREGA AS TEXTURAS DAS SKINS --- //
+ 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 5; j++) {
             char caminho[100];
@@ -98,7 +98,7 @@ void InitGame() {
         }
     }
 
-    // Carrega o recorde e define o que está desbloqueado
+    // recordes para desbloquear skins
     CarregarRecorde();
     if (recorde >= 500)      maiorSkinDesbloqueada = 5;
     else if (recorde >= 300) maiorSkinDesbloqueada = 4;
@@ -107,19 +107,18 @@ void InitGame() {
     else if (recorde >= 50)  maiorSkinDesbloqueada = 1;
     else                     maiorSkinDesbloqueada = 0;
 
-    // --- 2º INICIALIZA OS ELEMENTOS DO JOGO --- //
     InitScreens();
-    InitPlayer();   // Agora o Player inicia sabendo que as texturas existem!
+    InitPlayer();  
     InitCocos(); 
 
-    // Carrega as texturas de ambiente //
+    //texturas do ambiente
     areiaTexture = LoadTexture("assets/backgrounds/areia.png");
     mar1Texture = LoadTexture("assets/backgrounds/mar1.png");
     mar2Texture = LoadTexture("assets/backgrounds/mar2.png");
     coqueirosTexture = LoadTexture("assets/backgrounds/coqueiros.png");
     coracaoTexture = LoadTexture("assets/backgrounds/coracao.png");
 
-    // Inicializa as variáveis do jogo //
+    // variaveis
     score = 0;
     vidas = 3;
     bonusDourado = false;
@@ -130,12 +129,11 @@ void InitGame() {
     playerSpeedMultiplier = 1.0f; 
 }
 
-// Atualização da dificuldade do jogo //
+// atualização da dificuldade
 void UpdateGameProgression(float deltaTime) {
     gameTimer += deltaTime;
     extern void AddCoco(); 
-    
-    // Sistema de progressão da branch danda //
+   
     if (score >= 10 && cocosAdicionados == 3) {
         AddCoco();
         cocosAdicionados = 4;
@@ -159,7 +157,7 @@ void UpdateGameProgression(float deltaTime) {
         cocosAdicionados = 12;
     }
 
-    // Player fica mais lento ao perder vidas //
+    // jogador fica lento quando perde vidas
     switch (vidas) {
         case 2:
             playerSpeedMultiplier = 0.65f; 
@@ -173,14 +171,13 @@ void UpdateGameProgression(float deltaTime) {
     }
 }
 
-// Atualização do jogo //
+// atualização do jogo
 void UpdateGame(float deltaTime) {
 
-    //ADICIONE ESSE BLOCO AQUI NO INÍCIO:
     if (naCapa) {
         if (IsKeyReleased(KEY_ENTER)) {
             naCapa = false;
-            naHistoria = true; // Avança para a história
+            naHistoria = true; 
         }
         return;
     }
@@ -191,7 +188,7 @@ void UpdateGame(float deltaTime) {
     }  
     
     if (tutorial) {
-        // Seleção de skins (Navega por TODAS as 6 skins para exibir o cadeado)
+        // seleção de skins
         if (IsKeyPressed(KEY_UP)) {
             skinSelecionada++;
             if (skinSelecionada > 5) skinSelecionada = 0;
@@ -202,15 +199,15 @@ void UpdateGame(float deltaTime) {
         }
 
         if (IsKeyPressed(KEY_ENTER)) {
-            // Só deixa começar se a skin selecionada estiver liberada!
-            if (skinSelecionada <= maiorSkinDesbloqueada) {
+            
+            if (skinSelecionada <= maiorSkinDesbloqueada) { // garante que a skin so esteja desbloqueada de acordo com a pontuação
                 tutorial = false;
                 if (musicaFundo.stream.buffer != NULL) {
                     PlayMusicStream(musicaFundo);
                     SeekMusicStream(musicaFundo, 7.0f); 
                 }
             } else {
-                PlaySound(perdeuPontos); // Som de erro ao tentar escolher trancado
+                PlaySound(perdeuPontos); 
             }
         }
         return;  
@@ -218,7 +215,7 @@ void UpdateGame(float deltaTime) {
 
     UpdateMusicStream(musicaFundo);
 
-    // Restart //
+    // restart
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
         gameOver = false;
         tutorial = true;
@@ -248,7 +245,7 @@ void UpdateGame(float deltaTime) {
         UpdatePlayer(deltaTime);
     }
 
-    // Atualiza timer do bônus dourado //
+    // timer atualizado
     if (bonusDourado) {
         bonusTimer -= GetFrameTime();
         if (bonusTimer <= 0) {
@@ -256,7 +253,6 @@ void UpdateGame(float deltaTime) {
         }
     }
 
-    // Loop de colisão //
     if (!gameOver) {
         Node *atual = listaCocos;
 
@@ -274,34 +270,33 @@ void UpdateGame(float deltaTime) {
             };
 
             if (CheckCollisionCircleRec(cocoCenter, atual->coco.radius, playerRect)) {
-                // Colisão apenas por cima //
                 if (cocoCenter.y < playerRect.y + playerRect.height * 0.3f) {
                     
-                    // Coco normal //
+                    // coco normal
                     if (atual->coco.type == 0) {
                         PlaySound(ganhouPontos);
                         if (bonusDourado) score += 2;
                         else score += 1;
                     }
-                    // Lixo //
+                    // lixo
                     else if (atual->coco.type == 1) {
                         PlaySound(perdeuPontos);
                         if (vidas > 0) vidas--;
                         bonusDourado = false;
                     }
-                    // Coco dourado //
+                    // coco dourado
                     else if (atual->coco.type == 2) {
                         PlaySound(ganhouPontos);
                         bonusDourado = true;
                         bonusTimer = 20.0f; 
                     }
-                    // Água de coco //
+                    // agua de coco
                     else if (atual->coco.type == 3) {
                         if (maisVidas.frameCount > 0) PlaySound(maisVidas);
                         if (vidas < 3) vidas++;
                     }
 
-                    // Reseta o coco para o topo da tela //
+                    // coco volta para cima em posição aleatoria
                     atual->coco.y = GetRandomValue(-400, -30);
                     atual->coco.x = GetRandomValue(50, 750);
 
@@ -313,7 +308,7 @@ void UpdateGame(float deltaTime) {
         }
     }
 
-    // Verificando Game Over //
+    // game over
     if (vidas <= 0 && !gameOver) {
         PlaySound(morreu);
         gameOver = true;
@@ -322,9 +317,8 @@ void UpdateGame(float deltaTime) {
             recorde = score;
             SalvarRecorde();
         }
-            int antigaMaiorSkin = maiorSkinDesbloqueada;
+            int antigaMaiorSkin = maiorSkinDesbloqueada; // guarda valor antigo para comparar
 
-            // Recalcula o teto de skins caso quebre o recorde geral na rodada
             if (recorde >= 200)      maiorSkinDesbloqueada = 5;
             else if (recorde >= 120) maiorSkinDesbloqueada = 4;
             else if (recorde >= 80)  maiorSkinDesbloqueada = 3;
@@ -332,14 +326,13 @@ void UpdateGame(float deltaTime) {
             else if (recorde >= 20)  maiorSkinDesbloqueada = 1;
             else                    maiorSkinDesbloqueada = 0;
             
-            // Verifica se uma nova skin foi desbloqueada
-            if (maiorSkinDesbloqueada > antigaMaiorSkin) {
+            if (maiorSkinDesbloqueada > antigaMaiorSkin) { // se desbloqueou uma nova skin aparece no game over
                 temSkinNova = true;
             }
         }
 }
 
-// Desenho do jogo //
+// desenho do jogo
 void DrawGame() {
 
     if (naCapa) {
@@ -347,14 +340,14 @@ void DrawGame() {
         return;
     }
     
-    // Tela de história (Overlay com texto e imagem) //
+    // historia
     if (naHistoria) {
         UpdateHistory();  
         DrawHistory();    
         return;
     }
 
-    // Tela de tutorial //
+    // tutorial
     if (tutorial) {
         DrawTutorial();
         return;
@@ -362,7 +355,7 @@ void DrawGame() {
 
     ClearBackground((Color){154, 244, 255, 255});
 
-    // Tela de pause (overlay)
+    // pause
     if (isPaused) {
         DrawRectangle(0, 0, 1000, 600, Fade(WHITE, 0.6f));
 
@@ -379,7 +372,7 @@ void DrawGame() {
         return;  
     }
 
-    // Mar //
+    // mar
     float tempoAtual = GetTime();
     int waveOffset = sinf(tempoAtual * 1.5f) * 8;
     DrawTexture(mar1Texture, 0, waveOffset, WHITE);
@@ -387,33 +380,28 @@ void DrawGame() {
     int waveOffset2 = sinf(tempoAtual * 1.5f + 1.0f) * 8;
     DrawTexture(mar2Texture, 0, waveOffset2, WHITE);
 
-    // Areia e coqueiros //
+    // areia e coqueiros
     DrawTexture(areiaTexture, 0, 0, WHITE);
     DrawTexture(coqueirosTexture, 0, 0, WHITE);
 
     DrawCocos();
     DrawPlayer();
 
-    // Tela de bônus dourado (Overlay translúcido) //
+    // tela do coco dourado
     if (bonusDourado) {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(GOLD, 0.15f));
     }
 
-    // --- INTERFACE DE PONTUAÇÃO E VIDAS (SÓ DESENHA SE NÃO FOR GAME OVER) --- //
     if (!gameOver) {
         float spacingRubik = 1.0f;
-        
-        // Sombra do Score
+        // score
         DrawTextEx(Rubik, TextFormat("Cocos: %i", score), (Vector2){832, 559}, 30, spacingRubik, BLACK); 
-        // Texto do Score
         DrawTextEx(Rubik, TextFormat("Cocos: %i", score), (Vector2){830, 557}, 30, spacingRubik, RAYWHITE);
-
-        // Sombra do texto Vidas
+        // vidas
         DrawTextEx(Rubik, "Vidas: ", (Vector2){32, 559}, 30, spacingRubik, BLACK); 
-        // Texto do texto Vidas
         DrawTextEx(Rubik, "Vidas: ", (Vector2){30, 557}, 30, spacingRubik, RAYWHITE);
 
-        // Desenho dos corações
+        // corações
         float escalaCoracao = 0.6f;
         for (int i = 0; i < vidas; i++) {
             float espacamentoHorizontal = i * 45.0f;
@@ -423,7 +411,7 @@ void DrawGame() {
         }
     }
 
-    // Bônus dourado centralizado //
+    // bonus dourado
     if (bonusDourado && !gameOver) {
         char textoBonus[30];
         sprintf(textoBonus, "BÔNUS DOURADO: %.0f s", bonusTimer);
@@ -437,19 +425,17 @@ void DrawGame() {
 
     if (!gameOver) {
         float spacingRubik = 1.0f;
-        // Desenha uma sombrinha preta bem sutil por trás para garantir a leitura na água
+        // pause
         DrawTextEx(Rubik, "Pressione P para pausar", (Vector2){16, 16}, 16, spacingRubik, Fade(BLACK, 0.5f));
-        // Texto principal em branco semitransparente para ficar bem discreto
         DrawTextEx(Rubik, "Pressione P para pausar", (Vector2){15, 15}, 16, spacingRubik, Fade(RAYWHITE, 0.8f));
     }
 
-    // --- PAINEL DE GAME OVER --- //
     if (gameOver) {
        DrawGameOverScreen(score, recorde, skinSelecionada, texturasSkins);
     }
-} // 👈 Chave adicionada aqui para fechar a DrawGame() corretamente!
+} 
 
-// Funções de ranking //
+// funções ranking
 void CarregarRecorde() {
     FILE *arquivo = fopen("recorde.txt", "r");
     if (arquivo == NULL) return;
@@ -464,7 +450,7 @@ void SalvarRecorde() {
     fclose(arquivo);
 }
 
-// Desenho do tutorial e Seletor //
+// tutorial
 void DrawTutorial() {
     DrawTutorialScreen(skinSelecionada, maiorSkinDesbloqueada, texturasSkins, nomesSkins, mar1Texture, mar2Texture, areiaTexture, coqueirosTexture);
 }
