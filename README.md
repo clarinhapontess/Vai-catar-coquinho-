@@ -81,6 +81,6 @@ canva
 * [x] Música e efeitos sonoros
 * [x] tela de ínicio + game over
 * [x] impementação de skins colecionáveis
-* [ ] Vídeo demonstrativo
-* [ ] Slides
+* [x] Vídeo demonstrativo
+* [x] Slides
 
