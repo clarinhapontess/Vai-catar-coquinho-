@@ -52,7 +52,7 @@ Texture2D texturasSkins[6][5];
 const char* nomesSkins[6] = { "player", "maria", "gaiamum", "pirata", "robo", "chico" };
 
 // Adiciona cocos conforme dificuldade aumenta //
-int cocosAdicionados = 2;
+int cocosAdicionados = 3;
 
 // Protótipos das funções de ranking e interface //
 void DrawTutorial();
@@ -100,11 +100,11 @@ void InitGame() {
 
     // Carrega o recorde e define o que está desbloqueado
     CarregarRecorde();
-    if (recorde >= 200)      maiorSkinDesbloqueada = 5;
-    else if (recorde >= 120) maiorSkinDesbloqueada = 4;
-    else if (recorde >= 80)  maiorSkinDesbloqueada = 3;
-    else if (recorde >= 50)  maiorSkinDesbloqueada = 2;
-    else if (recorde >= 20)  maiorSkinDesbloqueada = 1;
+    if (recorde >= 500)      maiorSkinDesbloqueada = 5;
+    else if (recorde >= 300) maiorSkinDesbloqueada = 4;
+    else if (recorde >= 180)  maiorSkinDesbloqueada = 3;
+    else if (recorde >= 100)  maiorSkinDesbloqueada = 2;
+    else if (recorde >= 50)  maiorSkinDesbloqueada = 1;
     else                     maiorSkinDesbloqueada = 0;
 
     // --- 2º INICIALIZA OS ELEMENTOS DO JOGO --- //
@@ -126,7 +126,7 @@ void InitGame() {
     bonusTimer = 0;
     gameOver = false;
     gameTimer = 0;
-    cocosAdicionados = 2;
+    cocosAdicionados = 3;
     playerSpeedMultiplier = 1.0f; 
 }
 
@@ -136,24 +136,27 @@ void UpdateGameProgression(float deltaTime) {
     extern void AddCoco(); 
     
     // Sistema de progressão da branch danda //
-    if (score >= 10 && cocosAdicionados == 2) {
-        AddCoco();
-        cocosAdicionados = 3;
-    } else if (score >= 25 && cocosAdicionados == 3) {
+    if (score >= 10 && cocosAdicionados == 3) {
         AddCoco();
         cocosAdicionados = 4;
-    } else if (score >= 50 && cocosAdicionados == 4) {
+    } else if (score >= 25 && cocosAdicionados == 4) {
         AddCoco();
-        cocosAdicionados = 5;
-    } else if (score >= 80 && cocosAdicionados == 5) {
         AddCoco();
         cocosAdicionados = 6;
-    } else if (score >= 120 && cocosAdicionados == 6) {
+    } else if (score >= 50 && cocosAdicionados == 6) {
         AddCoco();
         cocosAdicionados = 7;
-    } else if (score >= 200 && cocosAdicionados == 7) {
-        AddCoco();
+    } else if (score >= 80 && cocosAdicionados == 7) {
+        AddCoco(); 
         cocosAdicionados = 8;
+    } else if (score >= 120 && cocosAdicionados == 8) {
+        AddCoco(); 
+        AddCoco();
+        cocosAdicionados = 10;
+    } else if (score >= 200 && cocosAdicionados == 10) {
+        AddCoco();
+        AddCoco();
+        cocosAdicionados = 12;
     }
 
     // Player fica mais lento ao perder vidas //

@@ -176,11 +176,11 @@ void DrawTutorialScreen(int skinSelecionada, int maiorSkinDesbloqueada, Texture2
 
         // Define o texto do preço baseado na skin selecionada
         const char* precoText = "0 Cocos";
-        if (skinSelecionada == 1)      precoText = "20 Cocos";
-        else if (skinSelecionada == 2) precoText = "50 Cocos";
-        else if (skinSelecionada == 3) precoText = "80 Cocos";
-        else if (skinSelecionada == 4) precoText = "120 Cocos";
-        else if (skinSelecionada == 5) precoText = "200 Cocos";
+        if (skinSelecionada == 1)      precoText = "50 Cocos";
+        else if (skinSelecionada == 2) precoText = "100 Cocos";
+        else if (skinSelecionada == 3) precoText = "180 Cocos";
+        else if (skinSelecionada == 4) precoText = "300 Cocos";
+        else if (skinSelecionada == 5) precoText = "500 Cocos";
 
         // Centraliza e desenha o texto vermelho do preço
         float spacingRubik = 1.0f;

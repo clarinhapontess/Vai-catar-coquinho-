@@ -29,7 +29,7 @@ void SetCocoType(Coco *coco) {
     if (score >= 10) {
         minSpeed = 2;
         maxSpeed = 3.5f;
-    } else if (score >= 25) {
+    } else if (score >= 20) {
         minSpeed = 3;
         maxSpeed = 4;
     } else if (score >= 40) {
@@ -38,6 +38,9 @@ void SetCocoType(Coco *coco) {
     } else if (score >= 60) {
         minSpeed = 3.5f;
         maxSpeed = 5;
+    }else if (score >= 100) {
+        minSpeed = 4;
+        maxSpeed = 6;
     } else {
         minSpeed = 2; 
         maxSpeed = 2.5f;
@@ -104,7 +107,7 @@ void InitCocos() {
     douradoTexture = LoadTexture("assets/cocos/dourado.png");
     aguaTexture = LoadTexture("assets/cocos/agua.png");
     
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 3; i++) {
         AddCoco();
     }
 }
