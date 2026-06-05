@@ -40,6 +40,9 @@ float playerSpeedMultiplier = 1.0f;
 float cocoSpeedMultiplier = 1.0f;
 extern bool naHistoria;
 bool naCapa = true; // para o jogo começar na capa
+//puxando funções criadas em outros arquivos 
+extern void AddCoco(); 
+extern void SetCocoType(Coco *coco); 
 
 // variáveis da funcionalidade de mutar jogo 
 bool isMuted = false;
@@ -132,7 +135,7 @@ void InitGame() {
 // atualização da dificuldade
 void UpdateGameProgression(float deltaTime) {
     gameTimer += deltaTime;
-    extern void AddCoco(); 
+    void AddCoco(); 
    
     if (score >= 10 && cocosAdicionados == 3) {
         AddCoco();
@@ -300,7 +303,7 @@ void UpdateGame(float deltaTime) {
                     atual->coco.y = GetRandomValue(-400, -30);
                     atual->coco.x = GetRandomValue(50, 750);
 
-                    extern void SetCocoType(Coco *coco); 
+                    void SetCocoType(Coco *coco); 
                     SetCocoType(&atual->coco); 
                 }
             }
