@@ -82,13 +82,16 @@ void ToggleMute() {
 // inicialização do jogo
 void InitGame() {
     InitAudioDevice();
-
+    SetMusicVolume(musicaFundo, 1.0f);
     // musica de fundo e audios
-    musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.wav");
-    SetMusicVolume(musicaFundo, 0.5f);
-    ganhouPontos = LoadSound("assets/audio/ganhouPontos.wav");
-    perdeuPontos = LoadSound("assets/audio/perdeuPontos.wav");
-    morreu = LoadSound("assets/audio/morreu.wav"); 
+    if(FileExists("assets/audio/aPraieraInstrumental.wav")){
+        musicaFundo = LoadMusicStream("assets/audio/aPraieraInstrumental.wav");
+    }
+    if(FileExists("assets/audio/ganhouPontos.wav")){
+        ganhouPontos = LoadSound("assets/audio/ganhouPontos.wav");}
+    if(FileExists("assets/audio/morreu.wav")){
+         morreu = LoadSound("assets/audio/morreu.wav"); 
+    }
     if (FileExists("assets/audio/maisVidas.wav")){
         maisVidas = LoadSound("assets/audio/maisVidas.wav");
     }
